@@ -1,0 +1,16 @@
+export const enum Resorts {
+  AnimalKingdom = 1,
+  Aulani = 2,
+  BayLakeTower = 3,
+  Boardwalk = 4,
+  BoulderRidge = 5,
+  CopperCreek = 6,
+  GrandCalifornian = 7,
+  GrandFloridian = 8,
+  HiltonHead = 9,
+  OldKeyWest = 10,
+  Polynesian = 11,
+  RivieraResort = 12,
+  SaratogaSprings = 13,
+  VeroBeach = 14,
+}

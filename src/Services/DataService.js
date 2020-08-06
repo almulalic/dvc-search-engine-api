@@ -1,7 +1,8 @@
-const cheerio = require("cheerio");
 const fetch = require("node-fetch");
+const cheerio = require("cheerio");
+const moment = require("moment");
+const path = require("path");
 const fs = require("fs");
-var path = require("path");
 
 const DateAlias = new Map([
   ["Jan", "January"],
@@ -249,8 +250,8 @@ class DataService {
     let DVCResalesShop = await this.FetchDVCResalesShop(null, null, false);
     let DVCResale = await this.FetchDVCResale(null, null, false);
 
-    let date = new Date()
-      .toLocaleString()
+    let date = moment()
+      .format("DD-MM-YYYY__HH:mm:ss")
       .replace(" ", "__")
       .replace(":", "-")
       .replace(":", "-");
@@ -292,8 +293,10 @@ class DataService {
                     `[${date}].json`
                   ),
                   function (err) {
-                    if (err) throw err;
-                    else {
+                    if (err) {
+                      console.log("Failed to move data to Backup Folder !");
+                      throw err;
+                    } else {
                       console.log("Successfully moved data to Backup Folder !");
                     }
                   }

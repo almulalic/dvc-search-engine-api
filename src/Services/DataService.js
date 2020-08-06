@@ -58,6 +58,7 @@ class DataService {
       "price",
       "href",
       "market",
+      "statusname",
     ];
     $("#tablepress-14")
       .find("tbody")
@@ -105,19 +106,29 @@ class DataService {
       "pointavailability",
       "href",
       "market",
+      "statusname",
     ];
 
     $(".c-content-person-1-slider").each(async (i, div) => {
       $(div)
         .find(".container")
         .each((i, col) => {
+          if (i === 5) return;
           $(col)
             .find(".col-md-2")
             .each((i, row) => {
               let text = $(row).find("a").text().padStart().padEnd();
               let key = keys[i];
 
-              if (key == "price" || key == "priceperpoint")
+              if (key == "resort") {
+                let splitted = text.split(" - ");
+                if (splitted.length !== 2) splitted = splitted[0].split("-");
+
+                temp.resort = splitted[0];
+                if (splitted[1][0] === " ")
+                  splitted[1] = splitted[1].replace(" ", "");
+                temp.statusname = splitted[1];
+              } else if (key == "price" || key == "priceperpoint")
                 temp[key] = parseFloat(text.replace("$", "").replace(",", ""));
               else if (key == "points") temp[key] = parseInt(text);
               else temp[key] = text;
@@ -140,7 +151,80 @@ class DataService {
     else return data;
   };
 
-  static RestoreData = (date) => {
+  static FetchDVCResalesShop = async (req, res, isFetch = true) => {
+    const htmlResponse = await fetch("https://resales.dvcshop.com/listings/");
+
+    const html = await htmlResponse.text();
+    const $ = cheerio.load(html);
+
+    var data = [],
+      row = [],
+      temp = {};
+
+    $("tbody tr").each(async (i, tr) => {
+      $(tr)
+        .find("td")
+        .each(async (i, td) => {
+          row.push($(td).text());
+          temp.href = $(td).find("a").attr("href");
+        });
+      temp.resort = row[0];
+      temp.points = Number(row[1]);
+      temp.pointavailability = row[2];
+      temp.useyear = DateAlias.get(row[3]);
+      temp.priceperpoint = Number(row[4].replace("$", ""));
+      temp.price = Number(row[5].replace("$", "").replace(",", ""));
+      temp.statusname = row[6];
+      temp.id = row[7].replace("VIEW ID# ", "");
+      temp.market = "Resales DVC Shop";
+      data.push(temp);
+      temp = {};
+      row = [];
+    });
+
+    if (isFetch) res.json(data);
+    else return data;
+  };
+
+  static FetchDVCResale = async (req, res, isFetch = true) => {
+    const htmlResponse = await fetch(
+      "http://www.dvcresale.com/buying-dvc/current-disney-vacation-club-listings/"
+    );
+
+    const html = await htmlResponse.text();
+    const $ = cheerio.load(html);
+
+    var data = [],
+      row = [],
+      temp = {};
+
+    $("#listing_content tr").each(async (i, tr) => {
+      $(tr)
+        .find("td")
+        .each(async (i, td) => {
+          row.push($(td).text());
+        });
+      temp.id = row[0];
+      temp.resort = row[1];
+      temp.pointavailability = Number(row[2]);
+      temp.useyear = DateAlias.get(row[3]);
+      temp.points = Number(row[6]);
+      temp.priceperpoint = Number(row[7].replace("$", "").replace(" ", ""));
+      temp.price = Number(
+        row[8].replace("$", "").replace(",", "").replace(" ", "")
+      );
+      temp.statusname = row[9];
+      temp.market = "DVC Resales";
+      data.push(temp);
+      temp = {};
+      row = [];
+    });
+
+    if (isFetch) res.json(data);
+    else return data;
+  };
+
+  static DVCResalesShop = (date) => {
     fs.rename(
       path.join(__dirname, "..", "Data", `[${date}].json`),
       path.join(__dirname, "..", "Data", "liveData.json"),
@@ -154,7 +238,7 @@ class DataService {
     );
   };
 
-  static RefreshData = async (req, res) => {
+  static RefreshData = async (req, res, isFetch = false) => {
     let DVCResaleMarket = await this.FetchDVCResaleMarketData(
       null,
       null,
@@ -162,6 +246,8 @@ class DataService {
     );
     let ResalesDVC = await this.FetchResalesDVC(null, null, false);
     let DVCStore = await this.FetchDVCStore(null, null, false);
+    let DVCResalesShop = await this.FetchDVCResalesShop(null, null, false);
+    let DVCResale = await this.FetchDVCResale(null, null, false);
 
     let date = new Date()
       .toLocaleString()
@@ -180,7 +266,15 @@ class DataService {
           console.log("Successfully renamed !");
           fs.appendFile(
             path.join(__dirname, "..", "Data", "liveData.json"),
-            JSON.stringify([].concat(DVCResaleMarket, ResalesDVC, DVCStore)),
+            JSON.stringify(
+              [].concat(
+                DVCResaleMarket,
+                ResalesDVC,
+                DVCStore,
+                DVCResalesShop,
+                DVCResale
+              )
+            ),
             function (err) {
               if (err) {
                 console.log("Failed to create new live data !");
@@ -211,7 +305,8 @@ class DataService {
       }
     );
 
-    res.json();
+    if (isFetch) res.json();
+    else return 0;
   };
 }
 

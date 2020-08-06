@@ -3,7 +3,8 @@ const {
   FilterMarkets,
   FilterResorts,
   FilterUseYears,
-} = require("../Algorithms/FilterAlgorithms");
+  FilterStatus,
+} = require("../Common/Algorithms/FilterAlgorithms");
 
 const {
   SortById,
@@ -11,9 +12,9 @@ const {
   SortByPoints,
   SortByDVCMarket,
   SortByPrice,
-} = require("./../Algorithms/SortingAlgorithms");
+} = require("./../Common/Algorithms/SortingAlgorithms");
 
-const { chunk } = require("../Algorithms/PaginationAlgorithms");
+const { chunk } = require("../Common/Algorithms/PaginationAlgorithms");
 
 class SearchService {
   static FilterData = (req, res) => {
@@ -29,6 +30,10 @@ class SearchService {
 
     if (req.body.useYears.length > 0) {
       resultData = FilterUseYears(resultData, req.body.useYears);
+    }
+
+    if (req.body.status.length > 0) {
+      resultData = FilterStatus(resultData, req.body.status);
     }
 
     switch (req.body.sidx) {

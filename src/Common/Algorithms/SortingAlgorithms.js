@@ -26,7 +26,13 @@ exports.SortByPoints = (data, direction) => {
   });
 };
 
-const dvcMarketOrder = ["DVC Resale Market", "Resales DVC", "DVC Store"];
+const dvcMarketOrder = [
+  "DVC Resale Market",
+  "Resales DVC",
+  "DVC Store",
+  "DVC Resales Shop",
+  "DVC Resales",
+];
 exports.SortByDVCMarket = (data, direction) => {
   return data.sort((a, b) => {
     return direction == "Ascending"

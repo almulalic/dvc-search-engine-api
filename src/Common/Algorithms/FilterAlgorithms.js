@@ -24,3 +24,13 @@ exports.FilterUseYears = (data, useyears) => {
 
   return sorted;
 };
+
+exports.FilterStatus = (data, statuses) => {
+  let sorted = [];
+  console.log(statuses);
+  data.forEach((x) => {
+    if (statuses.includes(x.statusname)) sorted.push(x);
+  });
+
+  return sorted;
+};

@@ -18,8 +18,16 @@ DataController.get("/FetchDVCStore", (req, res) => {
   DataService.FetchDVCStore(req, res);
 });
 
-DataController.get("/RefreshData", (req, res) => {
-  DataService.RefreshData(req, res);
+DataController.get("/FetchDVCResalesShop", (req, res) => {
+  DataService.FetchDVCResalesShop(req, res);
+});
+
+DataController.get("/FetchDVCResale", (req, res) => {
+  DataService.FetchDVCResale(req, res);
+});
+
+DataController.put("/RefreshData", (req, res) => {
+  DataService.RefreshData(req, res, true);
 });
 
 module.exports = DataController;

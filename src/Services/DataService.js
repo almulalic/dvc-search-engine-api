@@ -231,7 +231,7 @@ class DataService {
       path.join(__dirname, "..", "Data", "liveData.json"),
       function (err) {
         if (err) {
-          console.log("Failed to rename old data to live data !");
+          console.log("Failed to rename old data to live data!");
           console.log("ERROR: " + err);
           res.json();
         }
@@ -261,10 +261,10 @@ class DataService {
       path.join(__dirname, "..", "Data", `[${date}].json`),
       function (err) {
         if (err) {
-          console.log("Failed to rename live data !");
+          console.log("Failed to rename live data!");
           console.log("ERROR: " + err);
         } else {
-          console.log("Successfully renamed !");
+          console.log("Successfully renamed!");
           fs.appendFile(
             path.join(__dirname, "..", "Data", "liveData.json"),
             JSON.stringify(
@@ -278,11 +278,11 @@ class DataService {
             ),
             function (err) {
               if (err) {
-                console.log("Failed to create new live data !");
+                console.log("Failed to create new live data!");
                 this.RestoreData(date);
                 res.json();
               } else {
-                console.log("Successfully created new live data !");
+                console.log("Successfully created new live data!");
                 fs.rename(
                   path.join(__dirname, "..", "Data", `[${date}].json`),
                   path.join(
@@ -294,10 +294,10 @@ class DataService {
                   ),
                   function (err) {
                     if (err) {
-                      console.log("Failed to move data to Backup Folder !");
+                      console.log("Failed to move data to Backup Folder!");
                       throw err;
                     } else {
-                      console.log("Successfully moved data to Backup Folder !");
+                      console.log("Successfully moved data to Backup Folder!");
                     }
                   }
                 );

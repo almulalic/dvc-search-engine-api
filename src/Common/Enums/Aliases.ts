@@ -51,15 +51,6 @@ export const StatusAlias = new Map([
   ["Expires", 11],
 ]);
 
-export const OrderAlias = new Map([
-  ["Id", 0],
-  ["Market", 1],
-  ["Resort", 2],
-  ["Points", 3],
-  ["UseYear", 4],
-  ["Price", 5],
-]);
-
 export const DateAlias = new Map([
   ["Jan", "January"],
   ["Feb", "February"],

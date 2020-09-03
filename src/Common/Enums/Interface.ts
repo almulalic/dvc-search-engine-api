@@ -23,3 +23,23 @@ export class ResortRawAdapter {
   href: string;
   broker: string;
 }
+
+export type SortIdx =
+  | "id"
+  | "broker"
+  | "resort"
+  | "points"
+  | "useYear"
+  | "price";
+export type OrderDirection = "ASC" | "DESC";
+
+export interface FilterBody {
+  broker: number[];
+  resort: number[];
+  useYear: number[];
+  status: number[];
+  itemsPerPage: number;
+  page: number;
+  sidx: SortIdx;
+  sord: OrderDirection;
+}

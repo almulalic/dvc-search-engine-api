@@ -1,66 +1,68 @@
-const data = require("../Data/liveData.json");
-const {
-  FilterMarkets,
+import data from "../Data/liveData.json";
+
+import {
+  FilterBrokers,
   FilterResorts,
   FilterUseYears,
   FilterStatus,
-} = require("../Common/Algorithms/FilterAlgorithms");
+} from "../Common/Algorithms/FilterAlgorithms";
 
-const {
+import {
   SortById,
   SortByResort,
   SortByPoints,
-  SortByDVCMarket,
+  SortByBroker,
   SortByPrice,
-} = require("./../Common/Algorithms/SortingAlgorithms");
+  SortByUseYear,
+} from "./../Common/Algorithms/SortingAlgorithms";
 
-const { chunk } = require("../Common/Algorithms/PaginationAlgorithms");
+import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
+import { FilterBody, OrderDirection, SortIdx } from "../Common/Enums/Interface";
 
 class SearchService {
   static FilterData = (req, res) => {
-    let resultData = data;
+    let filteredData = data;
 
-    if (req.body.markets.length > 0) {
-      resultData = FilterMarkets(resultData, req.body.markets);
-    }
+    const body = req.body as FilterBody;
+    const sidx = req.sidx as SortIdx;
+    const sord = req.sord === ("ASC" as OrderDirection);
 
-    if (req.body.resorts.length > 0) {
-      resultData = FilterResorts(resultData, req.body.resorts);
-    }
+    if (body.broker.length > 0)
+      filteredData = FilterBrokers(filteredData, body.broker);
 
-    if (req.body.useYears.length > 0) {
-      resultData = FilterUseYears(resultData, req.body.useYears);
-    }
+    if (body.resort.length > 0)
+      filteredData = FilterResorts(filteredData, body.resort);
 
-    if (req.body.status.length > 0) {
-      resultData = FilterStatus(resultData, req.body.status);
-    }
+    if (body.useYear.length > 0)
+      filteredData = FilterUseYears(filteredData, body.useYear);
 
-    switch (req.body.sidx) {
-      case "Id":
-        resultData = SortById(resultData, req.body.sord);
+    if (body.status.length > 0)
+      filteredData = FilterStatus(filteredData, body.status);
+
+    switch (sidx) {
+      case "id":
+        filteredData = SortById(filteredData, sord);
         break;
-      case "Resort":
-        resultData = SortByResort(resultData, req.body.sord);
+      case "resort":
+        filteredData = SortByResort(filteredData, sord);
         break;
-      case "Points":
-        resultData = SortByPoints(resultData, req.body.sord);
+      case "points":
+        filteredData = SortByPoints(filteredData, sord);
         break;
-      case "Use Year":
-        // resultData = SortByUseYear(resultData, req.body.sord);
+      case "useYear":
+        filteredData = SortByUseYear(filteredData, sord);
         break;
-      case "Price":
-        resultData = SortByPrice(resultData, req.body.sord);
+      case "price":
+        filteredData = SortByPrice(filteredData, sord);
         break;
-      case "Market":
-        resultData = SortByDVCMarket(resultData, req.body.sord);
+      case "broker":
+        filteredData = SortByBroker(filteredData, sord);
         break;
     }
 
     res.json({
-      total: resultData.length,
-      records:
-        chunk(resultData, req.body.itemsPerPage)[req.body.page - 1] || [],
+      total: filteredData.length,
+      records: chunk(filteredData, body.itemsPerPage)[body.page - 1] || [],
     });
   };
 

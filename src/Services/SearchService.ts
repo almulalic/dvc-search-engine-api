@@ -20,7 +20,7 @@ import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
 import { FilterBody, OrderDirection, SortIdx } from "../Common/Enums/Interface";
 
 class SearchService {
-  static FilterData = (req, res) => {
+  public FilterData = (req, res) => {
     let filteredData = data;
 
     const body = req.body as FilterBody;
@@ -66,11 +66,11 @@ class SearchService {
     });
   };
 
-  static onlyUnique(value, index, self) {
+  public onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
 
-  static Unique = (req, res) => {
+  public Unique = (req, res) => {
     let arr = [];
     data.forEach((x) => {
       arr.push(x.statusname);
@@ -82,4 +82,4 @@ class SearchService {
   };
 }
 
-export default SearchService;
+export default new SearchService();

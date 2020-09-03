@@ -7,6 +7,7 @@ import DataScrapeController from "./API/Controllers/DataScraperController";
 import SearchController from "./API/Controllers/SearchController";
 
 const app = express();
+require("dotenv").config();
 let port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
@@ -35,3 +36,5 @@ app.listen(port, () => {
   //   }
   // }, 10000);
 });
+
+export default app;

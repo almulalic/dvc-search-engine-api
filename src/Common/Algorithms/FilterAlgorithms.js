@@ -27,7 +27,7 @@ exports.FilterUseYears = (data, useyears) => {
 
 exports.FilterStatus = (data, statuses) => {
   let sorted = [];
-  console.log(statuses);
+
   data.forEach((x) => {
     if (statuses.includes(x.statusname)) sorted.push(x);
   });

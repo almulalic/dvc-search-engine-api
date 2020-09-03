@@ -33,7 +33,9 @@ const dvcMarketOrder = [
   "DVC Resales Shop",
   "DVC Resales",
 ];
+
 exports.SortByDVCMarket = (data, direction) => {
+  console.log(data);
   return data.sort((a, b) => {
     return direction == "Ascending"
       ? dvcMarketOrder.indexOf(a.dvcmarket) -
@@ -57,6 +59,7 @@ const useYearOrder = [
   "November",
   "December",
 ];
+
 exports.SortByUseYear = (data, direction) => {
   return data.sort((a, b) => {
     return direction == "Ascending"

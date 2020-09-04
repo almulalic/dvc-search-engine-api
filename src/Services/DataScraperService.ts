@@ -123,7 +123,7 @@ class DataScraperService {
                 return $(x).text();
               }),
             $(tr).find("td").find("a").attr("href"),
-            "DVC Resale"
+            "DVC Resales"
           )
         );
       });
@@ -176,65 +176,30 @@ class DataScraperService {
 
     let DVCResalesShop = await this.ScrapeDVCResalesShop(null, null, false);
 
+    let newData = JSON.stringify(
+      [].concat(
+        DVCResaleMarket,
+        ResalesDVC,
+        DVCStore,
+        DVCResalesShop,
+        DVCResale
+      )
+    );
+
     let date = moment()
       .format("DD-MM-YYYY__HH:mm:ss")
       .replace(" ", "__")
       .replace(":", "-")
       .replace(":", "-");
 
-    let that = this;
-
-    fs.rename(
-      path.join(__dirname, "..", "Data", "liveData.json"),
-      path.join(__dirname, "..", "Data", `[${date}].json`),
-      (err) => {
-        if (err) {
-          console.log("Failed to rename live data!");
-          console.log("ERROR: " + err);
-        } else {
-          console.log("Successfully renamed!");
-          fs.appendFile(
-            path.join(__dirname, "..", "Data", "liveData.json"),
-            JSON.stringify(
-              [].concat(
-                DVCResaleMarket,
-                ResalesDVC,
-                DVCStore,
-                DVCResalesShop,
-                DVCResale
-              )
-            ),
-            (err) => {
-              if (err) {
-                console.log("Failed to create new live data!");
-                that.RestoreData(date);
-                res.json();
-              } else {
-                console.log("Successfully created new live data!");
-                fs.rename(
-                  path.join(__dirname, "..", "Data", `[${date}].json`),
-                  path.join(
-                    __dirname,
-                    "..",
-                    "Data",
-                    "Backup",
-                    `[${date}].json`
-                  ),
-                  (err) => {
-                    if (err) {
-                      console.log("Failed to move data to Backup Folder!");
-                      throw err;
-                    } else {
-                      console.log("Successfully moved data to Backup Folder!");
-                    }
-                  }
-                );
-              }
-            }
-          );
-        }
-      }
-    );
+    try {
+      await this.RenameOldData(date);
+      await this.CreateNewDataFile(newData, date);
+      await this.MoveDataToBackup(date);
+    } catch (err) {
+      console.error("Something went wrong please see error log", err);
+      res.json();
+    }
 
     if (isFetch) res.json();
     else return 0;
@@ -244,15 +209,66 @@ class DataScraperService {
 
   //#region Private Methods
 
-  private RestoreData = (date) => {
+  private RenameOldData = (date: string) => {
+    fs.rename(
+      path.join(__dirname, "..", "Data", "liveData.json"),
+      path.join(__dirname, "..", "Data", `[${date}].json`),
+      (err) => {
+        if (err) {
+          console.log("Failed to rename live data!");
+          console.error("ERROR: " + err);
+          throw err;
+        } else {
+          console.log("Successfully renamed!");
+        }
+      }
+    );
+  };
+
+  private CreateNewDataFile = (newData, date: string) => {
+    fs.appendFile(
+      path.join(__dirname, "..", "Data", "liveData.json"),
+      newData,
+      (err) => {
+        if (err) {
+          this.RestoreData(date);
+          console.log("Failed to create new live data!");
+          console.error("ERROR: " + err);
+          throw err;
+        } else {
+          console.log("Successfully created new live data!");
+        }
+      }
+    );
+  };
+
+  private MoveDataToBackup = (date: string) => {
+    fs.rename(
+      path.join(__dirname, "..", "Data", `[${date}].json`),
+      path.join(__dirname, "..", "Data", "Backup", `[${date}].json`),
+      (err) => {
+        if (err) {
+          console.log("Failed to move data to Backup Folder !");
+          console.error("ERROR: " + err);
+          throw err;
+        } else {
+          console.log("Successfully moved data to Backup Folder !");
+        }
+      }
+    );
+  };
+
+  private RestoreData = (date: string) => {
     fs.rename(
       path.join(__dirname, "..", "Data", `[${date}].json`),
       path.join(__dirname, "..", "Data", "liveData.json"),
       (err) => {
         if (err) {
           console.log("Failed to rename old data to live data !");
-          console.log("ERROR: " + err);
-          return;
+          console.error("ERROR: " + err);
+          throw err;
+        } else {
+          console.log("Successfully restored data on day: " + date);
         }
       }
     );

@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 
 import DataScrapeController from "./API/Controllers/DataScraperController";
 import SearchController from "./API/Controllers/SearchController";
+import DataScraperService from "./Services/DataScraperService";
 
 const app = express();
 require("dotenv").config();
@@ -19,22 +20,23 @@ app.use("/dataScraper", DataScrapeController);
 app.use("/search", SearchController);
 
 app.listen(port, () => {
-  console.log("Server is running on port: " + port);
-  // setInterval(() => {
-  //   let time = new Date();
-  //   const mins = time.getMinutes();
-  //   const diff = mins % 30;
-  //   time.setMinutes(mins - diff);
-  //   time.setSeconds(0);
+  console.info("Server is running on port: " + port);
 
-  //   let mom1 = moment(time).add(30, "m").valueOf();
-  //   let mom2 = moment().valueOf();
+  setInterval(() => {
+    let time = new Date();
+    const mins = time.getMinutes();
+    const diff = mins % 30;
+    time.setMinutes(mins - diff);
+    time.setSeconds(0);
 
-  //   if (mom1 === mom2) {
-  //     console.log("Refreshed in ", moment(mom1).format("YYYY-MM-DD HH:mm:ss"));
-  //     // DataScraperService.RefreshData();
-  //   }
-  // }, 10000);
+    let mom1 = moment(time).add(30, "m").valueOf();
+    let mom2 = moment().valueOf();
+
+    if (mom1 <= mom2) {
+      console.log("Refreshed in ", moment(mom1).format("YYYY-MM-DD HH:mm:ss"));
+      DataScraperService.RefreshData(null, null);
+    }
+  }, 10000);
 });
 
 export default app;

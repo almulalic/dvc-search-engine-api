@@ -15,10 +15,10 @@ export class DVCResaleMarketAdapter implements ResortAdapter {
   id: number;
   resort: number;
   points: number;
-  priceperpoint: number;
-  useyear: number;
-  pointavailability: string;
   price: number;
+  priceperpoint: number;
+  pointavailability: string;
+  useyear: number;
   status: number;
   href: string;
   broker: number;
@@ -29,13 +29,13 @@ export class DVCResaleMarketAdapter implements ResortAdapter {
 
   constructor(raw: ResortRawAdapter, broker: string) {
     this.id = raw.id;
-    this.resort = ResortAlias.get(raw.resort);
+    this.resort = ResortAlias.get(raw.resort.trim());
     this.points = Number(raw.points);
-    this.priceperpoint = raw.priceperpoint;
-    this.useyear = UseYearAlias.get(DateAlias.get(raw.useyear));
-    this.pointavailability = raw.pointavailability;
-    this.status = StatusAlias.get(raw.status) ?? 0;
     this.price = raw.price;
+    this.priceperpoint = raw.priceperpoint;
+    this.pointavailability = raw.pointavailability;
+    this.useyear = UseYearAlias.get(raw.useyear);
+    this.status = StatusAlias.get(raw.statusname) ?? 0;
     this.href = raw.href ?? null;
     this.broker = BrokerAlias.get(broker);
   }

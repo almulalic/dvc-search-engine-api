@@ -14,10 +14,10 @@ export class DVCResalesAdapter implements ResortAdapter {
   id: number;
   resort: number;
   points: number;
-  priceperpoint: number;
-  useyear: number;
-  pointavailability: string;
   price: number;
+  priceperpoint: number;
+  pointavailability: string;
+  useyear: number;
   status: number;
   href: string;
   broker: number;
@@ -33,16 +33,16 @@ export class DVCResalesAdapter implements ResortAdapter {
       ResortAlias.get(
         raw[1]
           .replace("Villas", "")
-          .replace("Resort", "")
           .replace("Hawaii", "")
+          .replace("Resort", "")
           .trim()
       );
     this.points = Number(raw[2]);
-    this.priceperpoint = NormalizePriceValue(raw[3]);
-    this.useyear = UseYearAlias.get(DateAlias.get(raw[4]));
-    this.pointavailability = raw[5];
-    this.status = StatusAlias.get(raw.status) ?? 0;
     this.price = raw[6][0] === "$" ? NormalizePriceValue(raw[6]) : 0;
+    this.priceperpoint = NormalizePriceValue(raw[3]);
+    this.pointavailability = raw[5];
+    this.useyear = UseYearAlias.get(DateAlias.get(raw[4]));
+    this.status = StatusAlias.get(raw.status) ?? 0;
     this.href = href ?? null;
     this.broker = BrokerAlias.get(broker);
   }
@@ -54,5 +54,6 @@ export class DVCResalesAdapter implements ResortAdapter {
   //#endregion
 
   //#region Private Methods
+
   //#endregion
 }

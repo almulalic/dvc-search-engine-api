@@ -9,10 +9,10 @@ export class DVCStoreAdapter implements ResortAdapter {
   id: number;
   resort: number;
   points: number;
-  priceperpoint: number;
-  useyear: number;
-  pointavailability: string;
   price: number;
+  priceperpoint: number;
+  pointavailability: string;
+  useyear: number;
   status: number;
   href: string;
   broker: number;
@@ -27,17 +27,19 @@ export class DVCStoreAdapter implements ResortAdapter {
     this.id = raw[1];
     this.resort = ResortAlias.get(
       RaS[0]
+        .trim()
+        .replace("Resort & Spa", "")
+        .replace("Vllas & Bungalows", "")
         .replace("Villas", "")
         .replace("Resort", "")
-        .replace("Hawaii", "")
         .trim()
     );
     this.points = Number(raw[3]);
-    this.priceperpoint = Number(this.GetPricePerPoint(pointavailability));
-    this.useyear = UseYearAlias.get(raw.useyear);
-    this.pointavailability = this.NormalizePointAvailablity(pointavailability);
-    this.status = StatusAlias.get(RaS[1]) ?? 0;
     this.price = NormalizePriceValue(raw[4]);
+    this.priceperpoint = Number(this.GetPricePerPoint(pointavailability));
+    this.pointavailability = this.NormalizePointAvailablity(pointavailability);
+    this.useyear = UseYearAlias.get(raw[2]);
+    this.status = StatusAlias.get(RaS[1].trim()) ?? 0;
     this.href = href ? "https://www.dvcstore.com/" + href : null;
     this.broker = BrokerAlias.get(broker);
   }

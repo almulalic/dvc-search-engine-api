@@ -21,7 +21,7 @@ import { FilterBody, OrderDirection, SortIdx } from "../Common/Enums/Interface";
 
 class SearchService {
   public FilterData = (req, res) => {
-    let filteredData = data;
+    let filteredData: any = data;
 
     const body = req.body as FilterBody;
     const sidx = req.sidx as SortIdx;
@@ -73,7 +73,7 @@ class SearchService {
   public Unique = (req, res) => {
     let arr = [];
     data.forEach((x) => {
-      arr.push(x.statusname);
+      arr.push(x.status);
     });
 
     // var unqiue = arr.filter(this.onlyUnique);

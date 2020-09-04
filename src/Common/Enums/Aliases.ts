@@ -2,8 +2,8 @@ export const BrokerAlias = new Map([
   ["DVC Resale Market", 0],
   ["Resales DVC", 1],
   ["DVC Store", 2],
-  ["DVC Resales Shop", 3],
-  ["DVC Resales", 4],
+  ["DVC Resales", 3],
+  ["DVC Resales Shop", 4],
 ]);
 
 export const ResortAlias = new Map([
@@ -15,14 +15,13 @@ export const ResortAlias = new Map([
   ["Boulder Ridge", 5],
   ["Copper Creek", 6],
   ["Grand Californian", 7],
-  ["Hilton Head", 8],
-  ["Old Key West", 9],
-  ["Polynesian", 10],
-  ["Saratoga Springs", 11],
-  ["Vero Beach", 12],
-  ["Riviera", 13],
-  ["Grand Floridian", 14],
-  ["Animal Kingdom", 15],
+  ["Grand Floridian", 8],
+  ["Hilton Head", 9],
+  ["Old Key West", 10],
+  ["Polynesian", 11],
+  ["Riviera", 12],
+  ["Saratoga Springs", 13],
+  ["Vero Beach", 14],
 ]);
 
 export const UseYearAlias = new Map([

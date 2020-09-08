@@ -1,13 +1,13 @@
-import { ResortAdapter } from "../Enums/Interface";
+import { ResortAdapter } from "../Types/Interface";
 import { NormalizePriceValue } from "../Helpers/Helpers";
-import { BrokerAlias } from "../Enums/Aliases";
+import { BrokerAlias } from "../Types/Aliases";
 
 import {
   ResortAlias,
   DateAlias,
   UseYearAlias,
   StatusAlias,
-} from "../Enums/Aliases";
+} from "../Types/Aliases";
 
 export class DVCResalesShopAdapter implements ResortAdapter {
   //#region Properties

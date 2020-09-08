@@ -22,13 +22,13 @@ import {
 } from "./../Common/Algorithms/SortingAlgorithms";
 
 import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
-import { FilterBody, OrderDirection, SortIdx } from "../Common/Enums/Interface";
+import { FilterBody, OrderDirection, SortIdx } from "../Common/Types/Interface";
 
 import fs from "fs";
 import path from "path";
 
 class SearchService {
-  public GetOverview = async (req, res) => {
+  public GetOverview = (req, res) => {
     const data =
       JSON.parse(
         fs.readFileSync(

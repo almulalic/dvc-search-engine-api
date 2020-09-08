@@ -1,4 +1,4 @@
-import { ResortAdapter } from "../Enums/Interface";
+import { ResortAdapter } from "../Types/Interface";
 import { NormalizePriceValue } from "../Helpers/Helpers";
 import {
   ResortAlias,
@@ -6,7 +6,7 @@ import {
   UseYearAlias,
   StatusAlias,
   BrokerAlias,
-} from "../Enums/Aliases";
+} from "../Types/Aliases";
 
 export class DVCResalesAdapter implements ResortAdapter {
   //#region Properties

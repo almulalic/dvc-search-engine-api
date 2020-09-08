@@ -4,7 +4,7 @@ import moment from "moment";
 import cheerio from "cheerio";
 import fetch from "node-fetch";
 
-import { ResortRawAdapter } from "./../Common/Enums/Interface";
+import { ResortAdapter } from "./../Common/Enums/Interface";
 
 import {
   DVCResalesShopAdapter,
@@ -178,14 +178,12 @@ class DataScraperService {
 
     let DVCResalesShop = await this.ScrapeDVCResalesShop(null, null, false);
 
-    let newData = JSON.stringify(
-      [].concat(
-        DVCResaleMarket,
-        ResalesDVC,
-        DVCStore,
-        DVCResalesShop,
-        DVCResale
-      )
+    let newData = [].concat(
+      DVCResaleMarket,
+      ResalesDVC,
+      DVCStore,
+      DVCResale,
+      DVCResalesShop
     );
 
     let date = moment()
@@ -200,7 +198,7 @@ class DataScraperService {
       await this.FilterAndCreateValidData(newData);
       await this.MoveDataToBackup(date);
     } catch (err) {
-      console.error("Something went wrong please see error log", err);
+      console.error("Something went wrong please see error log - ", err);
       res.json();
     }
 
@@ -231,7 +229,7 @@ class DataScraperService {
   private CreateNewDataFile = (newData, date: string) => {
     fs.appendFile(
       path.join(__dirname, "..", "Data", "liveData.json"),
-      newData,
+      JSON.stringify(newData),
       (err) => {
         if (err) {
           this.RestoreData(date);
@@ -246,57 +244,70 @@ class DataScraperService {
   };
 
   private FilterAndCreateValidData = (newData) => {
-    const filteredData = newData.filter((x: ResortRawAdapter) => {
+    const filteredData = newData.filter((x: ResortAdapter) => {
       if (
-        x.id &&
+        x.id?.length > 0 &&
         x.id !== " " &&
-        x.resort &&
-        x.resort !== " " &&
-        x.points &&
+        !isNaN(x.resort) &&
+        x.resort >= 0 &&
+        !isNaN(x.points) &&
         x.points >= 0 &&
-        x.price &&
+        !isNaN(x.price) &&
         x.price >= 0 &&
-        x.priceperpoint &&
+        !isNaN(x.priceperpoint) &&
         x.priceperpoint >= 0 &&
-        x.pointavailability &&
+        x.pointavailability?.length > 0 &&
         x.pointavailability !== " " &&
-        x.useyear &&
-        x.useyear !== " " &&
-        x.statusname &&
-        x.statusname !== " " &&
-        x.href &&
+        !isNaN(x.useyear) &&
+        x.useyear >= 0 &&
+        !isNaN(x.status) &&
+        x.status >= 0 &&
+        x.href?.length > 0 &&
         x.href !== " " &&
-        x.broker &&
-        x.broker !== " "
+        !isNaN(x.broker) &&
+        x.broker >= 0
       )
         return x;
     });
 
-    fs.appendFile(
-      path.join(__dirname, "..", "Data", "validLiveData.json"),
-      filteredData,
-      (err) => {
-        if (err) {
-          console.log("Failed to create filtered live data!");
-          console.error("ERROR: " + err);
+    if (filteredData.length > 0) {
+      fs.truncate(
+        path.join(__dirname, "..", "Data", "validLiveData.json"),
+        (err) => {
+          if (err) {
+            console.error("Truncation of valid live data failed. Reverting...");
+            return;
+          } else {
+            console.error("Successfully trunctuated old valid data!");
+            fs.appendFile(
+              path.join(__dirname, "..", "Data", "validLiveData.json"),
+              JSON.stringify(filteredData),
+              (err) => {
+                if (err) {
+                  console.log("Failed to create filtered live data!");
+                  console.error("ERROR: " + err);
 
-          path.join(__dirname, "..", "Data", "validLiveData.json"),
-            newData,
-            (err) => {
-              if (err) {
-                console.log("Failed to create filtered live data!");
-                console.error("ERROR: " + err);
-                throw err;
-              } else {
-                console.log("Successfully created new live data!");
+                  path.join(__dirname, "..", "Data", "validLiveData.json"),
+                    newData,
+                    (err) => {
+                      if (err) {
+                        console.log("Failed to create filtered live data!");
+                        console.error("ERROR: " + err);
+                        throw err;
+                      } else {
+                        console.log("Successfully created new live data!");
+                      }
+                    };
+                  throw err;
+                } else {
+                  console.log("Successfully created new valid live data!");
+                }
               }
-            };
-          throw err;
-        } else {
-          console.log("Successfully created new live data!");
+            );
+          }
         }
-      }
-    );
+      );
+    }
   };
 
   private MoveDataToBackup = (date: string) => {
@@ -305,11 +316,12 @@ class DataScraperService {
       path.join(__dirname, "..", "Data", "Backup", `[${date}].json`),
       (err) => {
         if (err) {
-          console.log("Failed to move data to Backup Folder !");
+          console.log("Failed to move data to Backup Folder!");
           console.error("ERROR: " + err);
           throw err;
         } else {
-          console.log("Successfully moved data to Backup Folder !");
+          console.log("Successfully moved data to Backup Folder!");
+          console.log("All done chief.");
         }
       }
     );
@@ -321,7 +333,7 @@ class DataScraperService {
       path.join(__dirname, "..", "Data", "liveData.json"),
       (err) => {
         if (err) {
-          console.log("Failed to rename old data to live data !");
+          console.log("Failed to rename old data to live data!");
           console.error("ERROR: " + err);
           throw err;
         } else {

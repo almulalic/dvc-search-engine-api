@@ -19,7 +19,7 @@ export class ResortRawAdapter {
   priceperpoint: number;
   pointavailability: string;
   useyear: string;
-  statusname: string;
+  status: string;
   href: string;
   broker: string;
 }

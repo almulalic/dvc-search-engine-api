@@ -112,9 +112,6 @@ class SearchService {
 
   public Unique = (req, res) => {
     let arr = [];
-    data.forEach((x) => {
-      arr.push(x.status);
-    });
 
     // var unqiue = arr.filter(this.onlyUnique);
 

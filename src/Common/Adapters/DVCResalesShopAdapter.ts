@@ -22,7 +22,6 @@ export class DVCResalesShopAdapter implements ResortAdapter {
   status: number;
   href: string;
   broker: number;
-
   //#endregion
 
   //#region Constructor
@@ -39,8 +38,10 @@ export class DVCResalesShopAdapter implements ResortAdapter {
     this.points = Number(raw[1]);
     this.price = NormalizePriceValue(raw[5]);
     this.priceperpoint = NormalizePriceValue(raw[4]);
-    this.pointavailability = raw[2];
-    this.useyear = UseYearAlias.get(DateAlias.get(raw[3]));
+    this.pointavailability = raw[2].toString();
+    this.useyear = UseYearAlias.get(
+      DateAlias.get(raw[3].substring(0, 3).trim())
+    );
     this.status = StatusAlias.get(raw[6]) ?? 0;
     this.href = href ?? null;
     this.broker = BrokerAlias.get(broker);

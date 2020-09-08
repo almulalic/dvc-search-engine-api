@@ -4,7 +4,7 @@ import moment from "moment";
 import cheerio from "cheerio";
 import fetch from "node-fetch";
 
-import { ResortAdapter } from "./../Common/Enums/Interface";
+import { ResortAdapter } from "../Common/Types/Interface";
 
 import {
   DVCResalesShopAdapter,
@@ -193,13 +193,13 @@ class DataScraperService {
       .replace(":", "-");
 
     try {
-      await this.RenameOldData(date);
-      await this.CreateNewDataFile(newData, date);
-      await this.FilterAndCreateValidData(newData);
-      await this.MoveDataToBackup(date);
+      this.RenameOldData(date);
+      this.CreateNewDataFile(newData, date);
+      this.FilterAndCreateValidData(newData);
+      this.MoveDataToBackup(date);
     } catch (err) {
-      console.error("Something went wrong please see error log - ", err);
-      res.json();
+      console.log(err);
+      return;
     }
 
     if (isFetch) res.json();
@@ -211,36 +211,34 @@ class DataScraperService {
   //#region Private Methods
 
   private RenameOldData = (date: string) => {
-    fs.rename(
-      path.join(__dirname, "..", "Data", "liveData.json"),
-      path.join(__dirname, "..", "Data", `[${date}].json`),
-      (err) => {
-        if (err) {
-          console.log("Failed to rename live data!");
-          console.error("ERROR: " + err);
-          throw err;
-        } else {
-          console.log("Successfully renamed!");
-        }
-      }
-    );
+    try {
+      fs.renameSync(
+        path.join(__dirname, "..", "Data", "liveData.json"),
+        path.join(__dirname, "..", "Data", `[${date}].json`)
+      );
+    } catch (err) {
+      console.error(err);
+      throw new LiveDataWriteError("Failed to rename live data! Reverting...");
+    }
+
+    console.log("Successfully renamed!");
   };
 
   private CreateNewDataFile = (newData, date: string) => {
-    fs.appendFile(
-      path.join(__dirname, "..", "Data", "liveData.json"),
-      JSON.stringify(newData),
-      (err) => {
-        if (err) {
-          this.RestoreData(date);
-          console.log("Failed to create new live data!");
-          console.error("ERROR: " + err);
-          throw err;
-        } else {
-          console.log("Successfully created new live data!");
-        }
-      }
-    );
+    try {
+      fs.appendFileSync(
+        path.join(__dirname, "..", "Data", "liveData.json"),
+        JSON.stringify(newData)
+      );
+    } catch (err) {
+      console.error(err);
+      this.RestoreData(date);
+      throw new LiveDataWriteError(
+        "Failed to create new live data! Reverting..."
+      );
+    }
+
+    console.log("Successfully created new live data!");
   };
 
   private FilterAndCreateValidData = (newData) => {
@@ -271,76 +269,59 @@ class DataScraperService {
     });
 
     if (filteredData.length > 0) {
-      fs.truncate(
-        path.join(__dirname, "..", "Data", "validLiveData.json"),
-        (err) => {
-          if (err) {
-            console.error("Truncation of valid live data failed. Reverting...");
-            return;
-          } else {
-            console.error("Successfully trunctuated old valid data!");
-            fs.appendFile(
-              path.join(__dirname, "..", "Data", "validLiveData.json"),
-              JSON.stringify(filteredData),
-              (err) => {
-                if (err) {
-                  console.log("Failed to create filtered live data!");
-                  console.error("ERROR: " + err);
+      try {
+        fs.truncateSync(
+          path.join(__dirname, "..", "Data", "validLiveData.json")
+        );
+      } catch (err) {
+        // this.RestoreData(date);
+        console.error(err);
+        throw new LiveDataWriteError(
+          "Failed to create new live data! Reverting..."
+        );
+      }
 
-                  path.join(__dirname, "..", "Data", "validLiveData.json"),
-                    newData,
-                    (err) => {
-                      if (err) {
-                        console.log("Failed to create filtered live data!");
-                        console.error("ERROR: " + err);
-                        throw err;
-                      } else {
-                        console.log("Successfully created new live data!");
-                      }
-                    };
-                  throw err;
-                } else {
-                  console.log("Successfully created new valid live data!");
-                }
-              }
-            );
-          }
-        }
-      );
+      console.error("Successfully trunctuated old valid data!");
+
+      try {
+        fs.appendFileSync(
+          path.join(__dirname, "..", "Data", "validLiveData.json"),
+          JSON.stringify(filteredData)
+        );
+      } catch (err) {
+        console.log(err);
+      }
+
+      console.log("Successfully created new valid live data!");
     }
   };
 
   private MoveDataToBackup = (date: string) => {
-    fs.rename(
-      path.join(__dirname, "..", "Data", `[${date}].json`),
-      path.join(__dirname, "..", "Data", "Backup", `[${date}].json`),
-      (err) => {
-        if (err) {
-          console.log("Failed to move data to Backup Folder!");
-          console.error("ERROR: " + err);
-          throw err;
-        } else {
-          console.log("Successfully moved data to Backup Folder!");
-          console.log("All done chief.");
-        }
-      }
-    );
+    try {
+      fs.renameSync(
+        path.join(__dirname, "..", "Data", `[${date}].json`),
+        path.join(__dirname, "..", "Data", "Backup", `[${date}].json`)
+      );
+    } catch (err) {
+      console.log("Failed to move data to Backup Folder!");
+    }
+
+    console.log("Successfully moved data to Backup Folder!");
+    console.log("All done chief.");
   };
 
   private RestoreData = (date: string) => {
-    fs.rename(
-      path.join(__dirname, "..", "Data", `[${date}].json`),
-      path.join(__dirname, "..", "Data", "liveData.json"),
-      (err) => {
-        if (err) {
-          console.log("Failed to rename old data to live data!");
-          console.error("ERROR: " + err);
-          throw err;
-        } else {
-          console.log("Successfully restored data on day: " + date);
-        }
-      }
-    );
+    try {
+      fs.renameSync(
+        path.join(__dirname, "..", "Data", `[${date}].json`),
+        path.join(__dirname, "..", "Data", "liveData.json")
+      );
+    } catch (err) {
+      console.error("ERROR: " + err);
+      throw new LiveDataWriteError("Failed to restore old live data!!!");
+    }
+
+    console.log("Successfully restored data on day: " + date);
   };
 
   //#endregion

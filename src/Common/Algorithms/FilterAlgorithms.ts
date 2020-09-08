@@ -1,4 +1,4 @@
-import { ResortAdapter } from "../Enums/Interface";
+import { ResortAdapter } from "../Types/Interface";
 
 export const FilterBrokers = (data: ResortAdapter[], brokers: number[]) => {
   return data.filter((x: ResortAdapter) => {

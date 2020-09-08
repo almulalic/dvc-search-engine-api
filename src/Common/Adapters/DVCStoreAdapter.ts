@@ -1,6 +1,6 @@
-import { ResortAdapter } from "../Enums/Interface";
-import { ResortAlias, UseYearAlias, StatusAlias } from "../Enums/Aliases";
-import { BrokerAlias } from "../Enums/Aliases";
+import { ResortAdapter } from "../Types/Interface";
+import { ResortAlias, UseYearAlias, StatusAlias } from "../Types/Aliases";
+import { BrokerAlias } from "../Types/Aliases";
 import { NormalizePriceValue } from "../Helpers/Helpers";
 
 export class DVCStoreAdapter implements ResortAdapter {

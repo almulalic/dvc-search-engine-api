@@ -1,5 +1,5 @@
 export class ResortAdapter {
-  id: number;
+  id: string;
   resort: number;
   price: number;
   points: number;
@@ -12,7 +12,7 @@ export class ResortAdapter {
 }
 
 export class ResortRawAdapter {
-  id: number;
+  id: string;
   resort: string;
   points: number;
   price: number;
@@ -29,8 +29,10 @@ export type SortIdx =
   | "broker"
   | "resort"
   | "points"
+  | "pricePerPoint"
   | "useYear"
   | "price";
+
 export type OrderDirection = "ASC" | "DESC";
 
 export interface FilterBody {
@@ -38,8 +40,13 @@ export interface FilterBody {
   resort: number[];
   useYear: number[];
   status: number[];
-  itemsPerPage: number;
-  page: number;
+  pointsRange: number[];
+  priceRange: number[];
+  pricePerPointRange: number[];
+  idInput: string;
   sidx: SortIdx;
   sord: OrderDirection;
+  itemsPerPage: number;
+  includeDefectiveData: boolean;
+  currentPage: number;
 }

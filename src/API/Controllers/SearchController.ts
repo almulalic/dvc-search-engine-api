@@ -7,6 +7,10 @@ const SearchController = express.Router();
 
 //#region Controllers
 
+SearchController.get("/overview", (req, res) => {
+  SearchService.GetOverview(req, res);
+});
+
 SearchController.post("/FilterData", (req, res) => {
   SearchService.FilterData(req, res);
 });

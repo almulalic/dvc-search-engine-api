@@ -6,7 +6,7 @@ import { NormalizePriceValue } from "../Helpers/Helpers";
 export class DVCStoreAdapter implements ResortAdapter {
   //#region Properties
 
-  id: number;
+  id: string;
   resort: number;
   points: number;
   price: number;

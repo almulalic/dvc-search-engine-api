@@ -4,6 +4,8 @@ import moment from "moment";
 import cheerio from "cheerio";
 import fetch from "node-fetch";
 
+import { ResortRawAdapter } from "./../Common/Enums/Interface";
+
 import {
   DVCResalesShopAdapter,
   DVCResaleMarketAdapter,
@@ -195,6 +197,7 @@ class DataScraperService {
     try {
       await this.RenameOldData(date);
       await this.CreateNewDataFile(newData, date);
+      await this.FilterAndCreateValidData(newData);
       await this.MoveDataToBackup(date);
     } catch (err) {
       console.error("Something went wrong please see error log", err);
@@ -234,6 +237,60 @@ class DataScraperService {
           this.RestoreData(date);
           console.log("Failed to create new live data!");
           console.error("ERROR: " + err);
+          throw err;
+        } else {
+          console.log("Successfully created new live data!");
+        }
+      }
+    );
+  };
+
+  private FilterAndCreateValidData = (newData) => {
+    const filteredData = newData.filter((x: ResortRawAdapter) => {
+      if (
+        x.id &&
+        x.id !== " " &&
+        x.resort &&
+        x.resort !== " " &&
+        x.points &&
+        x.points >= 0 &&
+        x.price &&
+        x.price >= 0 &&
+        x.priceperpoint &&
+        x.priceperpoint >= 0 &&
+        x.pointavailability &&
+        x.pointavailability !== " " &&
+        x.useyear &&
+        x.useyear !== " " &&
+        x.statusname &&
+        x.statusname !== " " &&
+        x.href &&
+        x.href !== " " &&
+        x.broker &&
+        x.broker !== " "
+      )
+        return x;
+    });
+
+    fs.appendFile(
+      path.join(__dirname, "..", "Data", "validLiveData.json"),
+      filteredData,
+      (err) => {
+        if (err) {
+          console.log("Failed to create filtered live data!");
+          console.error("ERROR: " + err);
+
+          path.join(__dirname, "..", "Data", "validLiveData.json"),
+            newData,
+            (err) => {
+              if (err) {
+                console.log("Failed to create filtered live data!");
+                console.error("ERROR: " + err);
+                throw err;
+              } else {
+                console.log("Successfully created new live data!");
+              }
+            };
           throw err;
         } else {
           console.log("Successfully created new live data!");

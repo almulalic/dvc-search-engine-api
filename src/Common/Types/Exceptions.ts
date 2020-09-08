@@ -1,4 +1,4 @@
-class LiveDataWriteError extends Error {
+export class LiveDataWriteError extends Error {
   constructor(message) {
     super(message);
     this.name = "LiveDataWriteError";

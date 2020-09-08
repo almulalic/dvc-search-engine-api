@@ -5,6 +5,7 @@ import cheerio from "cheerio";
 import fetch from "node-fetch";
 
 import { ResortAdapter } from "../Common/Types/Interface";
+import { LiveDataWriteError } from "../Common/Types/Exceptions";
 
 import {
   DVCResalesShopAdapter,
@@ -13,6 +14,7 @@ import {
   DVCStoreAdapter,
   DVCResaleAdapter,
 } from "../Common/Adapters";
+import EmailService from "../Email/EmailService";
 
 class DataScraperService {
   //#region Public Methods
@@ -198,7 +200,16 @@ class DataScraperService {
       this.FilterAndCreateValidData(newData);
       this.MoveDataToBackup(date);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+
+      let restoreSuccessful = await this.RestoreData(date);
+      EmailService.SendErrorMail(
+        err,
+        "Refresh Data Section",
+        date,
+        restoreSuccessful
+      );
+
       return;
     }
 
@@ -218,6 +229,7 @@ class DataScraperService {
       );
     } catch (err) {
       console.error(err);
+
       throw new LiveDataWriteError("Failed to rename live data! Reverting...");
     }
 
@@ -281,7 +293,7 @@ class DataScraperService {
         );
       }
 
-      console.error("Successfully trunctuated old valid data!");
+      console.error("Successfully trunctuated old valid live data!");
 
       try {
         fs.appendFileSync(
@@ -318,10 +330,11 @@ class DataScraperService {
       );
     } catch (err) {
       console.error("ERROR: " + err);
-      throw new LiveDataWriteError("Failed to restore old live data!!!");
+      return 1;
     }
 
     console.log("Successfully restored data on day: " + date);
+    return 0;
   };
 
   //#endregion

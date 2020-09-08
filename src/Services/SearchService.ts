@@ -26,6 +26,7 @@ import { FilterBody, OrderDirection, SortIdx } from "../Common/Types/Interface";
 
 import fs from "fs";
 import path from "path";
+import EmailService from "../Email/EmailService";
 
 class SearchService {
   public GetOverview = (req, res) => {

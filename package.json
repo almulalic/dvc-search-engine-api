@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@sendgrid/mail": "^7.2.5",
     "@types/express": "^4.17.8",
     "@types/node": "^14.6.3",
     "babel": "^6.23.0",

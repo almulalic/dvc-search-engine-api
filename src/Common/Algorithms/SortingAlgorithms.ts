@@ -55,3 +55,9 @@ export const SortByPrice = (data, ascending) => {
     return ascending ? a.price - b.price : b.price - a.price;
   });
 };
+
+export const SortByPricePerPoint = (data, ascending) => {
+  return data.sort((a, b) => {
+    return ascending ? a.price - b.price : b.price - a.price;
+  });
+};

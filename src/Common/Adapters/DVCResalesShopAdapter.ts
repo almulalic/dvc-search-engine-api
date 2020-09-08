@@ -12,7 +12,7 @@ import {
 export class DVCResalesShopAdapter implements ResortAdapter {
   //#region Properties
 
-  id: number;
+  id: string;
   resort: number;
   points: number;
   price: number;

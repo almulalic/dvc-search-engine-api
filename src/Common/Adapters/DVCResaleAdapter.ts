@@ -6,7 +6,7 @@ import { BrokerAlias } from "../Enums/Aliases";
 export class DVCResaleAdapter implements ResortAdapter {
   //#region Properties
 
-  id: number;
+  id: string;
   resort: number;
   points: number;
   price: number;

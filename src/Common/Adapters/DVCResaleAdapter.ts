@@ -45,7 +45,7 @@ export class DVCResaleAdapter implements ResortAdapter {
     this.points = Number(raw[2]);
     this.price = NormalizePriceValue(raw[8]);
     this.priceperpoint = NormalizePriceValue(raw[7]);
-    this.pointavailability = null;
+    this.pointavailability = "Not provided by broker.";
     this.useyear = UseYearAlias.get(raw[3]);
     this.status = StatusAlias.get(raw[9]) ?? 0;
     this.href = href ?? null;

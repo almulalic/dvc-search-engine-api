@@ -55,7 +55,7 @@ export const DateAlias = new Map([
   ["Feb", "February"],
   ["Mar", "March"],
   ["Apr", "April"],
-  ["Mar", "May"],
+  ["May", "May"],
   ["Jun", "June"],
   ["Jul", "July"],
   ["Aug", "August"],

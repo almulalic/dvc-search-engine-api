@@ -26,7 +26,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/Server.ts",
-    "start": "node src/Server.ts"
+    "start": "ts-node src/Server.ts TS_NODE_TRANSPILE_ONLY=true"
   },
   "author": "",
   "license": "ISC"

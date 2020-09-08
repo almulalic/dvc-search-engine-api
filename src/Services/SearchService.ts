@@ -1,6 +1,3 @@
-import data from "../Data/liveData.json";
-import validData from "../Data/validLiveData.json";
-
 import { MaxAndMinRanges } from "../Common/Algorithms/CalculationAlgorithms";
 
 import {
@@ -27,8 +24,25 @@ import {
 import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
 import { FilterBody, OrderDirection, SortIdx } from "../Common/Enums/Interface";
 
+import fs from "fs";
+import path from "path";
+
 class SearchService {
-  public GetOverview = (req, res) => {
+  public GetOverview = async (req, res) => {
+    const data =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "liveData.json")
+        ) as any
+      ) ?? [];
+
+    const validData =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "validLiveData.json")
+        ) as any
+      ) ?? [];
+
     const ranges = MaxAndMinRanges(data);
 
     res.json({
@@ -41,6 +55,20 @@ class SearchService {
   };
 
   public FilterData = (req, res) => {
+    const data =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "liveData.json")
+        ) as any
+      ) ?? [];
+
+    const validData =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "validLiveData.json")
+        ) as any
+      ) ?? [];
+
     const body = req.body as FilterBody;
 
     let filteredData: any = body.includeDefectiveData ? data : validData;

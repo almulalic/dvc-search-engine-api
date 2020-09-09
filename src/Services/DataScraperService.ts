@@ -239,7 +239,7 @@ class DataScraperService {
   private CreateNewDataFile = (newData, date: string) => {
     try {
       fs.appendFileSync(
-        path.join(__dirname, "..", "Data", "liveData.json"),
+        path.join(__dirname, "..", "Dataa", "liveData.json"),
         JSON.stringify(newData)
       );
     } catch (err) {

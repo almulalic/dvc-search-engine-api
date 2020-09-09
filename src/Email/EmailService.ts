@@ -13,17 +13,18 @@ class EmailService {
         from: "dvcbot@enviorment.live",
         subject: "A wild error has appeard :O",
         html: `<div>
-            <h1>${location}</h1>
-            <h2>${error.type}</h2>
+            <h1 style='color:red'>${location}</h1>
+            <h2>${error.stack}</h2>
             <p>${error}</p>
             <hr>
             <h1>Was backup possible: ${
               backupPossible
-                ? "Yes, restored version from: " +
+                ? "<span style='color:green'>Yes, restored version from: " +
                   moment(backupDate, "DD-MM-YYYY__HH:mm:ss").format(
-                    "DD/MM/YY HH:mm:ss"
-                  )
-                : "Nope"
+                    "Date: DD/MM/YY HH:mm:ss"
+                  ) +
+                  "</span>"
+                : "<span style='color:green'>Nope</span>"
             }</h1>"
             <h2>${moment().format("DD/MM/YY HH:mm:ss")}</h2>
           </div>`,

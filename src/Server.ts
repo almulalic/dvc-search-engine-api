@@ -24,15 +24,15 @@ app.listen(port, () => {
 
   setInterval(() => {
     let time = new Date();
+
     const mins = time.getMinutes();
-    const diff = mins % 30;
-    time.setMinutes(mins - diff);
+
+    time.setMinutes(mins - (mins % 30));
     time.setSeconds(0);
 
     let mom1 = moment(time).add(30, "m").valueOf();
-    let mom2 = moment().valueOf();
 
-    if (mom1 <= mom2) {
+    if (mom1 <= moment().valueOf()) {
       console.log("Refreshed in ", moment(mom1).format("YYYY-MM-DD HH:mm:ss"));
       DataScraperService.RefreshData(null, null);
     }

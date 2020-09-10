@@ -11,11 +11,11 @@ SearchController.get("/overview", (req, res) => {
   SearchService.GetOverview(req, res);
 });
 
-SearchController.post("/FilterData", (req, res) => {
+SearchController.post("/filterData", (req, res) => {
   SearchService.FilterData(req, res);
 });
 
-SearchController.post("/Unique", (req, res) => {
+SearchController.post("/unique", (req, res) => {
   SearchService.Unique(req, res);
 });
 

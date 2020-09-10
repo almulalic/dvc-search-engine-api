@@ -22,11 +22,15 @@ import {
 } from "./../Common/Algorithms/SortingAlgorithms";
 
 import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
-import { FilterBody, OrderDirection, SortIdx } from "../Common/Types/Interface";
+import {
+  FilterBody,
+  OrderDirection,
+  SortIdx,
+  ResortAdapter,
+} from "../Common/Types/Interface";
 
 import fs from "fs";
 import path from "path";
-import EmailService from "../Email/EmailService";
 
 class SearchService {
   public GetOverview = (req, res) => {
@@ -140,11 +144,20 @@ class SearchService {
   }
 
   public Unique = (req, res) => {
-    let arr = [];
+    const data =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "liveData.json")
+        ) as any
+      ) ?? ([] as ResortAdapter[]);
 
-    // var unqiue = arr.filter(this.onlyUnique);
+    const arr = data.map((x) => {
+      return x.resort;
+    });
 
-    // res.json(unqiue);
+    var unqiue = arr.filter(this.onlyUnique);
+
+    res.json(unqiue);
   };
 }
 

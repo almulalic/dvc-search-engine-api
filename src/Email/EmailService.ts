@@ -1,12 +1,18 @@
 import sgMail from "@sendgrid/mail";
 import moment from "moment";
+import { LiveDataWriteError } from "../Common/Types/Exceptions";
 
 require("dotenv").config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 class EmailService {
-  public SendErrorMail = (location, error, backupPossible, backupDate) => {
+  public SendErrorMail = (
+    location: string,
+    error: string,
+    backupDate: string,
+    backupPossible: number
+  ) => {
     sgMail
       .send({
         to: "almir.mulalic.am@gmail.com",
@@ -14,7 +20,6 @@ class EmailService {
         subject: "A wild error has appeard :O",
         html: `<div>
             <h1 style='color:red'>${location}</h1>
-            <h2>${error.stack}</h2>
             <p>${error}</p>
             <hr>
             <h1>Was backup possible: ${

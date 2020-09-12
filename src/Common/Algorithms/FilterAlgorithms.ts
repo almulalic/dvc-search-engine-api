@@ -14,7 +14,7 @@ export const FilterResorts = (data: ResortAdapter[], resorts: number[]) => {
 
 export const FilterUseYears = (data: ResortAdapter[], useyears: number[]) => {
   return data.filter((x: ResortAdapter) => {
-    if (useyears.includes(x.useyear)) return x;
+    if (useyears.includes(x.useYear)) return x;
   });
 };
 
@@ -42,8 +42,8 @@ export const FilterPricePerPoint = (
 ) => {
   return data.filter((x: ResortAdapter) => {
     if (
-      x.priceperpoint >= pricePerPointRange[0] &&
-      x.priceperpoint <= pricePerPointRange[1]
+      x.pricePerPoint >= pricePerPointRange[0] &&
+      x.pricePerPoint <= pricePerPointRange[1]
     )
       return x;
   });

@@ -264,12 +264,12 @@ class DataScraperService {
         x.points >= 0 &&
         !isNaN(x.price) &&
         x.price >= 0 &&
-        !isNaN(x.priceperpoint) &&
-        x.priceperpoint >= 0 &&
-        x.pointavailability?.length > 0 &&
-        x.pointavailability !== " " &&
-        !isNaN(x.useyear) &&
-        x.useyear >= 0 &&
+        !isNaN(x.pricePerPoint) &&
+        x.pricePerPoint >= 0 &&
+        x.pointAvailability?.length > 0 &&
+        x.pointAvailability !== " " &&
+        !isNaN(x.useYear) &&
+        x.useYear >= 0 &&
         !isNaN(x.status) &&
         x.status >= 0 &&
         x.href?.length > 0 &&

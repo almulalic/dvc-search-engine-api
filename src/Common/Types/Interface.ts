@@ -3,9 +3,9 @@ export class ResortAdapter {
   resort: number;
   price: number;
   points: number;
-  priceperpoint: number;
-  pointavailability: string;
-  useyear: number;
+  pricePerPoint: number;
+  pointAvailability: string;
+  useYear: number;
   status: number;
   href: string;
   broker: number;
@@ -16,9 +16,9 @@ export class ResortRawAdapter {
   resort: string;
   points: number;
   price: number;
-  priceperpoint: number;
-  pointavailability: string;
-  useyear: string;
+  pricePerPoint: number;
+  pointAvailability: string;
+  useYear: string;
   status: string;
   href: string;
   broker: string;

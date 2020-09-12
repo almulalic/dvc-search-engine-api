@@ -34,13 +34,47 @@ const validDataRanges = MaxAndMinRanges(validData);
 
 //#region All Data
 
-for (let i = 0; i < 10; ++i) {
-  test(`Price Filter Test - Simple [${i}/10] - All Data`, () => {
-    const range = RandomizeRange(ranges.price[0], ranges.price[1]);
+// Price
 
-    expect(FilterPrice(data, [range[0], range[1]])).toHaveLength(
+for (let i = 0; i < 10; ++i) {
+  const randRange = RandomizeRange(ranges.price[0], ranges.price[1]);
+
+  test(`Price Filter - Simple - [${i}/10] - [${randRange[0]},${randRange[1]} - All Data`, () => {
+    expect(FilterPrice(data, [randRange[0], randRange[1]])).toHaveLength(
       data.filter(
-        (x: ResortAdapter) => x.price >= range[0] && x.price <= range[1]
+        (x: ResortAdapter) => x.price >= randRange[0] && x.price <= randRange[1]
+      ).length
+    );
+  });
+}
+
+// Points
+
+for (let i = 0; i < 10; ++i) {
+  const randRange = RandomizeRange(ranges.points[0], ranges.points[1]);
+
+  test(`Price Filter - Simple - [${i}/10] - [${randRange[0]},${randRange[1]} - All Data`, () => {
+    expect(FilterPrice(data, [randRange[0], randRange[1]])).toHaveLength(
+      data.filter(
+        (x: ResortAdapter) =>
+          x.points >= randRange[0] && x.points <= randRange[1]
+      ).length
+    );
+  });
+}
+
+// Price Per Point
+for (let i = 0; i < 10; ++i) {
+  const randRange = RandomizeRange(
+    ranges.pricePerPoint[0],
+    ranges.pricePerPoint[1]
+  );
+
+  test(`Price Filter - Simple - [${i}/10] - [${randRange[0]},${randRange[1]} - All Data`, () => {
+    expect(FilterPrice(data, [randRange[0], randRange[1]])).toHaveLength(
+      data.filter(
+        (x: ResortAdapter) =>
+          x.pricePerPoint >= randRange[0] && x.pricePerPoint <= randRange[1]
       ).length
     );
   });

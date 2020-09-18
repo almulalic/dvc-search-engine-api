@@ -28,8 +28,9 @@ const validData =
 //#region All Data
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - Simple [${i}/10] - All Data`, () => {
-    const number = RandomizeInRange(UseYearAlias.size);
+  const number = RandomizeInRange(UseYearAlias.size);
+
+  test(`Use Year Filter Test - Simple [${i}/10] - Input: ${number} - All Data`, () => {
     expect(FilterUseYears(data, [number])).toHaveLength(
       data.filter((x: ResortAdapter) => x.useYear === number).length
     );
@@ -37,13 +38,13 @@ for (let i = 0; i < 10; ++i) {
 }
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - Medium [${i}/10] - All Data`, () => {
-    const randArray = Array(UseYearAlias.size - 4)
-      .fill(0)
-      .map((__) => {
-        return RandomizeInRange(UseYearAlias.size);
-      });
+  const randArray = Array(UseYearAlias.size - 4)
+    .fill(0)
+    .map((__) => {
+      return RandomizeInRange(UseYearAlias.size);
+    });
 
+  test(`Use Year Filter Test - Medium [${i}/10] - Input: ${randArray} - All Data`, () => {
     expect(FilterUseYears(data, randArray)).toHaveLength(
       data.filter((x: ResortAdapter) => randArray.includes(x.useYear)).length
     );
@@ -51,13 +52,13 @@ for (let i = 0; i < 10; ++i) {
 }
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - HC [${i}/10] - All Data`, () => {
-    const randArray = Array(UseYearAlias.size - 2)
-      .fill(0)
-      .map((__) => {
-        return RandomizeInRange(UseYearAlias.size);
-      });
+  const randArray = Array(UseYearAlias.size - 2)
+    .fill(0)
+    .map((__) => {
+      return RandomizeInRange(UseYearAlias.size);
+    });
 
+  test(`Use Year Filter Test - HC [${i}/10] - Input: ${randArray} - All Data`, () => {
     expect(FilterUseYears(data, randArray)).toHaveLength(
       data.filter((x: ResortAdapter) => randArray.includes(x.useYear)).length
     );
@@ -69,8 +70,9 @@ for (let i = 0; i < 10; ++i) {
 //#region Valid Data
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - Simple [${i}/10] - Valid Data`, () => {
-    const number = RandomizeInRange(UseYearAlias.size);
+  const number = RandomizeInRange(UseYearAlias.size);
+
+  test(`Use Year Filter Test - Simple [${i}/10] - Input: ${number} - Valid Data`, () => {
     expect(FilterUseYears(validData, [number])).toHaveLength(
       validData.filter((x: ResortAdapter) => x.useYear === number).length
     );
@@ -78,13 +80,13 @@ for (let i = 0; i < 10; ++i) {
 }
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - Medium [${i}/10] - Valid Data`, () => {
-    const randArray = Array(UseYearAlias.size - 4)
-      .fill(0)
-      .map((__) => {
-        return RandomizeInRange(UseYearAlias.size);
-      });
+  const randArray = Array(UseYearAlias.size - 4)
+    .fill(0)
+    .map((__) => {
+      return RandomizeInRange(UseYearAlias.size);
+    });
 
+  test(`Use Year Filter Test - Medium [${i}/10] - Input: ${randArray} - Valid Data`, () => {
     expect(FilterUseYears(data, randArray)).toHaveLength(
       data.filter((x: ResortAdapter) => randArray.includes(x.useYear)).length
     );
@@ -92,13 +94,13 @@ for (let i = 0; i < 10; ++i) {
 }
 
 for (let i = 0; i < 10; ++i) {
-  test(`Use Year Filter Test - HC [${i}/10] - Valid Data`, () => {
-    const randArray = Array(UseYearAlias.size - 2)
-      .fill(0)
-      .map((__) => {
-        return RandomizeInRange(UseYearAlias.size);
-      });
+  const randArray = Array(UseYearAlias.size - 2)
+    .fill(0)
+    .map((__) => {
+      return RandomizeInRange(UseYearAlias.size);
+    });
 
+  test(`Use Year Filter Test - HC [${i}/10] - Input: ${randArray} - Valid Data`, () => {
     expect(FilterUseYears(data, randArray)).toHaveLength(
       data.filter((x: ResortAdapter) => randArray.includes(x.useYear)).length
     );

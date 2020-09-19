@@ -16,9 +16,9 @@ export class ResortRawAdapter {
   resort: string;
   points: number;
   price: number;
-  pricePerPoint: number;
-  pointAvailability: string;
-  useYear: string;
+  priceperpoint: number;
+  pointavailability: string;
+  useyear: string;
   status: string;
   href: string;
   broker: string;
@@ -33,7 +33,7 @@ export type SortIdx =
   | "useYear"
   | "price";
 
-export type OrderDirection = "ASC" | "DESC";
+export type OrderDirection = "ASC" | "DESC" | "-";
 
 export interface FilterBody {
   broker: number[];

@@ -32,9 +32,9 @@ export class DVCResaleMarketAdapter implements ResortAdapter {
     this.resort = ResortAlias.get(raw.resort.trim().replace("Resort", ""));
     this.points = Number(raw.points);
     this.price = raw.price;
-    this.pricePerPoint = raw.pricePerPoint;
-    this.pointAvailability = raw.pointAvailability?.toString();
-    this.useYear = UseYearAlias.get(raw.useYear);
+    this.pricePerPoint = raw.priceperpoint;
+    this.pointAvailability = raw.pointavailability?.toString();
+    this.useYear = UseYearAlias.get(raw.useyear);
     this.status = StatusAlias.get(raw.status) ?? 0;
     this.href = raw.href ?? null;
     this.broker = BrokerAlias.get(broker);

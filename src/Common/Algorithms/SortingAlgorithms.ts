@@ -29,28 +29,9 @@ export const SortByBroker = (data: ResortAdapter[], ascending: boolean) => {
   });
 };
 
-const useYearOrder = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
 export const SortByUseYear = (data: ResortAdapter[], ascending: boolean) => {
   return data.sort((a: ResortAdapter, b: ResortAdapter) => {
-    return ascending
-      ? useYearOrder.indexOf(a.useYear.toString()) -
-          useYearOrder.indexOf(b.useYear.toString())
-      : useYearOrder.indexOf(b.useYear.toString()) -
-          useYearOrder.indexOf(a.useYear.toString());
+    return ascending ? a.useYear - b.useYear : b.useYear - a.useYear;
   });
 };
 
@@ -65,6 +46,8 @@ export const SortByPricePerPoint = (
   ascending: boolean
 ) => {
   return data.sort((a: ResortAdapter, b: ResortAdapter) => {
-    return ascending ? a.price - b.price : b.price - a.price;
+    return ascending
+      ? a.pricePerPoint - b.pricePerPoint
+      : b.pricePerPoint - a.pricePerPoint;
   });
 };

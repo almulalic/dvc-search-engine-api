@@ -78,8 +78,8 @@ class SearchService {
 
     let filteredData: any = body.includeDefectiveData ? data : validData;
 
-    const sidx = req.sidx as SortIdx;
-    const sord = req.sord === ("ASC" as OrderDirection);
+    const sidx = body.sidx as SortIdx;
+    const sord = body.sord === ("ASC" as OrderDirection);
 
     if (body.broker.length > 0)
       filteredData = FilterBrokers(filteredData, body.broker);
@@ -95,13 +95,15 @@ class SearchService {
 
     if (body.pointsRange[0] !== null && body.pointsRange[1] !== null)
       filteredData = FilterPoints(filteredData, body.pointsRange);
-    else if (body.priceRange[0] !== null && body.priceRange[1] !== null)
-      filteredData = FilterPrice(filteredData, body.pointsRange);
-    else if (
+
+    if (body.priceRange[0] !== null && body.priceRange[1] !== null)
+      filteredData = FilterPrice(filteredData, body.priceRange);
+
+    if (
       body.pricePerPointRange[0] !== null &&
       body.pricePerPointRange[1] !== null
     )
-      filteredData = FilterPricePerPoint(filteredData, body.pointsRange);
+      filteredData = FilterPricePerPoint(filteredData, body.pricePerPointRange);
 
     if (body.idInput && body.idInput !== "" && body.idInput !== " ")
       filteredData = FilterId(filteredData, body.idInput);
@@ -136,6 +138,26 @@ class SearchService {
       totalFiltered: filteredData.length,
       records:
         chunk(filteredData, body.itemsPerPage)[body.currentPage - 1] || [],
+    });
+  };
+
+  public GetAll = (req, res) => {
+    const data =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "liveData.json")
+        ) as any
+      ) ?? [];
+
+    const validData =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "Data", "validLiveData.json")
+        ) as any
+      ) ?? [];
+
+    res.json({
+      records: data,
     });
   };
 

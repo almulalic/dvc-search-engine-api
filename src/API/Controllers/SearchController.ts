@@ -15,6 +15,10 @@ SearchController.post("/filterData", (req, res) => {
   SearchService.FilterData(req, res);
 });
 
+SearchController.get("/allListings", (req, res) => {
+  SearchService.GetAll(req, res);
+});
+
 SearchController.post("/unique", (req, res) => {
   SearchService.Unique(req, res);
 });

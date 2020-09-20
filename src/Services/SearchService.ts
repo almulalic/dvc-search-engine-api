@@ -136,8 +136,7 @@ class SearchService {
       total: data.length,
       totalValid: validData.length,
       totalFiltered: filteredData.length,
-      records:
-        chunk(filteredData, body.itemsPerPage)[body.currentPage - 1] || [],
+      records: filteredData,
     });
   };
 

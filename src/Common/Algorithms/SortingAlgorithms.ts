@@ -2,12 +2,7 @@ import { ResortAdapter } from "../Types/Interface";
 
 export const SortById = (data: ResortAdapter[], ascending: boolean) => {
   return data.sort((a: ResortAdapter, b: ResortAdapter) => {
-    let first = a.id.toUpperCase(),
-      second = b.id.toUpperCase();
-
-    if (first < second) return ascending ? -1 : 1;
-    if (first > second) return ascending ? 1 : -1;
-    return 0;
+    return a.id.localeCompare(b.id);
   });
 };
 

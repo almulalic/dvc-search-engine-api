@@ -42,6 +42,43 @@ class EmailService {
         console.log("Error notification email failed to  deliver!");
       });
   };
+
+  public SendContactEmail = (name: string, email: string, message: string) => {
+    sgMail
+      .send({
+        to: "dvcsearchengine@enviorment.live",
+        from: "dvcbot@enviorment.live",
+        subject: "A wild error has appeard :O",
+        html: `<div>
+            <h1 style='color:lightblue'>CONTACT</h1>
+            <h3>${name}</h3>
+            <h3>FROM: ${email}</h3>
+            <hr>
+          <p>${message}</p>
+            <h2>${moment().format("DD/MM/YY HH:mm:ss")}</h2>
+          </div>`,
+      })
+      .then(() => {
+        console.log("Error notification email successfully sent!");
+      })
+      .catch((err) => {
+        console.error(err);
+        this.SendErrorMail(
+          "Contact",
+          "Contact email failed to sent",
+          moment().format("DD/MM/YY HH:mm:ss"),
+          1
+        );
+        console.log(
+          "Contact mail failed to delive, backup sent. Content:" +
+            name +
+            " " +
+            email +
+            " " +
+            message
+        );
+      });
+  };
 }
 
 export default new EmailService();

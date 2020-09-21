@@ -43,10 +43,12 @@ class EmailService {
       });
   };
 
-  public SendContactEmail = (req, res) => {
+  public SendContactEmail = async (req, res) => {
     const { name, email, message } = req;
 
-    sgMail
+    let flag = 0;
+
+    await sgMail
       .send({
         to: "dvcsearchengine@enviorment.live",
         from: "dvcbot@enviorment.live",
@@ -64,10 +66,10 @@ class EmailService {
       })
       .then(() => {
         console.log("Contact notification email successfully sent!");
-        res.json();
+        flag = 0;
       })
       .catch((err) => {
-        res.sendStatus(400);
+        flag = 1;
         console.error(err);
         this.SendErrorMail(
           "Contact",
@@ -76,7 +78,46 @@ class EmailService {
           1
         );
         console.log(
-          "Contact mail failed to delive, backup sent. Content:" +
+          "Contact mail failed to deliver, backup sent. Content:" +
+            name +
+            " " +
+            email +
+            " " +
+            message
+        );
+      });
+
+    sgMail
+      .send({
+        to: email,
+        from: "dvcbot@enviorment.live",
+        subject: "DVC Resale Search Engine Contact Status",
+        html: `<div>
+            <h1 style='color:lightblue'>Thank you for contacting us</h1>
+            <hr>
+            <h4>We recieved your message and we will try to respond in shortest possible time</h4>
+            <hr/>
+            <h4>Timestamp: ${moment().format("DD/MM/YY HH:mm:ss")}</h4>
+          </div>`,
+      })
+      .then(() => {
+        console.log(
+          "Contact notification email successfully sent to recipient!"
+        );
+        res.json();
+      })
+      .catch((err) => {
+        res.sendStatus(400);
+
+        console.error(err);
+        this.SendErrorMail(
+          "Contact",
+          "Contact email failed to sent",
+          moment().format("DD/MM/YY HH:mm:ss"),
+          1
+        );
+        console.log(
+          "Contact mail to recipient failed to deliver, backup sent. Content:" +
             name +
             " " +
             email +

@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import DataScrapeController from "./API/Controllers/DataScraperController";
 import SearchController from "./API/Controllers/SearchController";
 import DataScraperService from "./Services/DataScraperService";
+import ContactController from "./API/Controllers/ContactController";
 
 const app = express();
 require("dotenv").config();
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("/dataScraper", DataScrapeController);
+app.use("/contact", ContactController);
 app.use("/search", SearchController);
 
 app.listen(port, () => {

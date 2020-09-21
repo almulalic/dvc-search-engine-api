@@ -43,25 +43,31 @@ class EmailService {
       });
   };
 
-  public SendContactEmail = (name: string, email: string, message: string) => {
+  public SendContactEmail = (req, res) => {
+    const { name, email, message } = req;
+
     sgMail
       .send({
         to: "dvcsearchengine@enviorment.live",
         from: "dvcbot@enviorment.live",
-        subject: "A wild error has appeard :O",
+        subject: "DVC Resale Search Engine Contact",
         html: `<div>
             <h1 style='color:lightblue'>CONTACT</h1>
-            <h3>${name}</h3>
-            <h3>FROM: ${email}</h3>
             <hr>
-          <p>${message}</p>
-            <h2>${moment().format("DD/MM/YY HH:mm:ss")}</h2>
+            <h3>Name: ${name}</h3>
+            <h3>E-mail: ${email}</h3>
+            <hr>
+            <p><span style="font-weight:bold">Message:</span> ${message}</p>
+            <hr/>
+            <h3>${moment().format("DD/MM/YY HH:mm:ss")}</h3>
           </div>`,
       })
       .then(() => {
-        console.log("Error notification email successfully sent!");
+        console.log("Contact notification email successfully sent!");
+        res.json();
       })
       .catch((err) => {
+        res.sendStatus(400);
         console.error(err);
         this.SendErrorMail(
           "Contact",

@@ -38,11 +38,11 @@ export class DVCResalesAdapter implements ResortAdapter {
           .trim()
       );
     this.points = Number(raw[2]);
-    this.price = raw[6][0] === "$" ? NormalizePriceValue(raw[6]) : 0;
+    this.price = raw[6][0] === "$" ? NormalizePriceValue(raw[6]) : null;
     this.pricePerPoint = NormalizePriceValue(raw[3]);
     this.pointAvailability = raw[5]?.toString();
     this.useYear = UseYearAlias.get(DateAlias.get(raw[4]));
-    this.status = StatusAlias.get(raw.status) ?? 0;
+    this.status = raw[6][0] !== "$" ? 5 ?? null : null;
     this.href = href ?? null;
     this.broker = BrokerAlias.get(broker);
   }

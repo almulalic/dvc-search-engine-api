@@ -21,32 +21,21 @@ import {
   SortByUseYear,
 } from "./../Common/Algorithms/SortingAlgorithms";
 
-import { chunk } from "../Common/Algorithms/PaginationAlgorithms";
-import {
-  FilterBody,
-  OrderDirection,
-  SortIdx,
-  ResortAdapter,
-} from "../Common/Types/Interface";
+import conn from "../Database/connection";
+
+import { FilterBody, OrderDirection, SortIdx, ResortAdapter } from "../Common/Types/Interface";
 
 import fs from "fs";
 import path from "path";
+import { classToPlain } from "class-transformer";
 
 class SearchService {
   public GetOverview = (req, res) => {
     const data =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "liveData.json")
-        ) as any
-      ) ?? [];
+      JSON.parse(fs.readFileSync(path.join(__dirname, "..", "Data", "liveData.json")) as any) ?? [];
 
     const validData =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "validLiveData.json")
-        ) as any
-      ) ?? [];
+      JSON.parse(fs.readFileSync(path.join(__dirname, "..", "Data", "validLiveData.json")) as any) ?? [];
 
     const ranges = MaxAndMinRanges(data);
 
@@ -59,101 +48,83 @@ class SearchService {
     });
   };
 
-  public FilterData = (req, res) => {
-    const data =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "liveData.json")
-        ) as any
-      ) ?? [];
+  public FilterData = async (req, res) => {
+    let data = [];
 
-    const validData =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "validLiveData.json")
-        ) as any
-      ) ?? [];
+    await conn.query(
+      "SELECT * FROM liveValidData WHERE archivedAt IS NULL ORDER BY createdAt DESC",
+      (err, result, fields) => {
+        let plainResult = classToPlain(result[0]);
 
-    const body = req.body as FilterBody;
+        const validData = JSON.parse(plainResult.data);
 
-    let filteredData: any = body.includeDefectiveData ? data : validData;
+        const body = req.body as FilterBody;
 
-    const sidx = body.sidx as SortIdx;
-    const sord = body.sord === ("ASC" as OrderDirection);
+        let filteredData: any = body.includeDefectiveData ? data : validData;
 
-    if (body.broker.length > 0)
-      filteredData = FilterBrokers(filteredData, body.broker);
+        const sidx = body.sidx as SortIdx;
+        const sord = body.sord === ("ASC" as OrderDirection);
 
-    if (body.resort.length > 0)
-      filteredData = FilterResorts(filteredData, body.resort);
+        if (body.broker.length > 0) filteredData = FilterBrokers(filteredData, body.broker);
 
-    if (body.useYear.length > 0)
-      filteredData = FilterUseYears(filteredData, body.useYear);
+        if (body.resort.length > 0) filteredData = FilterResorts(filteredData, body.resort);
 
-    if (body.status.length > 0)
-      filteredData = FilterStatus(filteredData, body.status);
+        if (body.useYear.length > 0) filteredData = FilterUseYears(filteredData, body.useYear);
 
-    if (body.pointsRange[0] !== null && body.pointsRange[1] !== null)
-      filteredData = FilterPoints(filteredData, body.pointsRange);
+        if (body.status.length > 0) filteredData = FilterStatus(filteredData, body.status);
 
-    if (body.priceRange[0] !== null && body.priceRange[1] !== null)
-      filteredData = FilterPrice(filteredData, body.priceRange);
+        if (body.pointsRange[0] !== null && body.pointsRange[1] !== null)
+          filteredData = FilterPoints(filteredData, body.pointsRange);
 
-    if (
-      body.pricePerPointRange[0] !== null &&
-      body.pricePerPointRange[1] !== null
-    )
-      filteredData = FilterPricePerPoint(filteredData, body.pricePerPointRange);
+        if (body.priceRange[0] !== null && body.priceRange[1] !== null)
+          filteredData = FilterPrice(filteredData, body.priceRange);
 
-    if (body.idInput && body.idInput !== "" && body.idInput !== " ")
-      filteredData = FilterId(filteredData, body.idInput);
+        if (body.pricePerPointRange[0] !== null && body.pricePerPointRange[1] !== null)
+          filteredData = FilterPricePerPoint(filteredData, body.pricePerPointRange);
 
-    switch (sidx) {
-      case "id":
-        filteredData = SortById(filteredData, sord);
-        break;
-      case "resort":
-        filteredData = SortByResort(filteredData, sord);
-        break;
-      case "points":
-        filteredData = SortByPoints(filteredData, sord);
-        break;
-      case "price":
-        filteredData = SortByPrice(filteredData, sord);
-        break;
-      case "pricePerPoint":
-        filteredData = SortByPricePerPoint(filteredData, sord);
-        break;
-      case "useYear":
-        filteredData = SortByUseYear(filteredData, sord);
-        break;
-      case "broker":
-        filteredData = SortByBroker(filteredData, sord);
-        break;
-    }
+        if (body.idInput && body.idInput !== "" && body.idInput !== " ")
+          filteredData = FilterId(filteredData, body.idInput);
 
-    res.json({
-      total: data.length,
-      totalValid: validData.length,
-      totalFiltered: filteredData.length,
-      records: filteredData,
-    });
+        switch (sidx) {
+          case "id":
+            filteredData = SortById(filteredData, sord);
+            break;
+          case "resort":
+            filteredData = SortByResort(filteredData, sord);
+            break;
+          case "points":
+            filteredData = SortByPoints(filteredData, sord);
+            break;
+          case "price":
+            filteredData = SortByPrice(filteredData, sord);
+            break;
+          case "pricePerPoint":
+            filteredData = SortByPricePerPoint(filteredData, sord);
+            break;
+          case "useYear":
+            filteredData = SortByUseYear(filteredData, sord);
+            break;
+          case "broker":
+            filteredData = SortByBroker(filteredData, sord);
+            break;
+        }
+
+        res.json({
+          total: plainResult.length,
+          totalValid: validData.length,
+          totalFiltered: filteredData.length,
+          records: filteredData,
+        });
+      }
+    );
   };
 
   public GetAll = (req, res) => {
     const data =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "liveData.json")
-        ) as any
-      ) ?? [];
+      JSON.parse(fs.readFileSync(path.join(__dirname, "..", "Data", "liveData.json")) as any) ?? [];
 
     const validData =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "validLiveData.json")
-        ) as any
-      ) ?? [];
+      JSON.parse(fs.readFileSync(path.join(__dirname, "..", "Data", "validLiveData.json")) as any) ?? [];
 
     res.json({
       records: data,
@@ -166,11 +137,8 @@ class SearchService {
 
   public Unique = (req, res) => {
     const data =
-      JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, "..", "Data", "liveData.json")
-        ) as any
-      ) ?? ([] as ResortAdapter[]);
+      JSON.parse(fs.readFileSync(path.join(__dirname, "..", "Data", "liveData.json")) as any) ??
+      ([] as ResortAdapter[]);
 
     const arr = data.map((x) => {
       return x.resort;

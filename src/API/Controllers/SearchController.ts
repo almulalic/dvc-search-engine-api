@@ -1,6 +1,6 @@
 import cors from "cors";
 import express from "express";
-
+import conn from "../../Database/connection";
 import SearchService from "../../Services/SearchService";
 
 const SearchController = express.Router();

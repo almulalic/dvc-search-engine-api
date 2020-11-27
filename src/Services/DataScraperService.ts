@@ -6,6 +6,7 @@ import fetch from "node-fetch";
 
 import { ResortAdapter } from "../Common/Types/Interface";
 import { LiveDataWriteError } from "../Common/Types/Exceptions";
+import conn from "../Database/connection";
 
 import {
   DVCResalesShopAdapter,
@@ -15,14 +16,13 @@ import {
   DVCResaleAdapter,
 } from "../Common/Adapters";
 import EmailService from "../Email/EmailService";
+import { classToPlain } from "class-transformer";
 
 class DataScraperService {
   //#region Public Methods
 
   public ScrapeDVCResaleMarketData = async (req, res, isFetch = true) => {
-    const htmlResponse = await fetch(
-      "https://www.dvcresalemarket.com/listings/"
-    );
+    const htmlResponse = await fetch("https://www.dvcresalemarket.com/listings/");
 
     const html = await htmlResponse.text();
     const $ = cheerio.load(html);
@@ -38,9 +38,7 @@ class DataScraperService {
   };
 
   public ScrapeResalesDVC = async (req, res, isFetch = true) => {
-    const htmlResponse = await fetch(
-      "https://www.resalesdvc.com/dvc-resale-listings/"
-    );
+    const htmlResponse = await fetch("https://www.resalesdvc.com/dvc-resale-listings/");
 
     const html = await htmlResponse.text();
     const $ = cheerio.load(html);
@@ -70,9 +68,7 @@ class DataScraperService {
   };
 
   public ScrapeDVCStore = async (req, res, isFetch = true) => {
-    const htmlResponse = await fetch(
-      "https://www.dvcstore.com/dvc-listings.cfm"
-    );
+    const htmlResponse = await fetch("https://www.dvcstore.com/dvc-listings.cfm");
 
     const html = await htmlResponse.text();
     const $ = cheerio.load(html);
@@ -166,11 +162,7 @@ class DataScraperService {
   };
 
   public RefreshData = async (req, res, isFetch = false) => {
-    let DVCResaleMarket = await this.ScrapeDVCResaleMarketData(
-      null,
-      null,
-      false
-    );
+    let DVCResaleMarket = await this.ScrapeDVCResaleMarketData(null, null, false);
 
     let ResalesDVC = await this.ScrapeResalesDVC(null, null, false);
 
@@ -180,35 +172,12 @@ class DataScraperService {
 
     let DVCResalesShop = await this.ScrapeDVCResalesShop(null, null, false);
 
-    let newData = [].concat(
-      DVCResaleMarket,
-      ResalesDVC,
-      DVCStore,
-      DVCResale,
-      DVCResalesShop
-    );
-
-    let date = moment()
-      .format("DD-MM-YYYY__HH:mm:ss")
-      .replace(" ", "__")
-      .replace(":", "-")
-      .replace(":", "-");
+    let newData = [].concat(DVCResaleMarket, ResalesDVC, DVCStore, DVCResale, DVCResalesShop);
 
     try {
-      this.RenameOldData(date);
-      this.CreateNewDataFile(newData, date);
-      this.FilterAndCreateValidData(newData);
-      this.MoveDataToBackup(date);
+      this.UploadData(newData);
     } catch (err) {
       console.error(err);
-
-      let restoreSuccessful = await this.RestoreData(date);
-      EmailService.SendErrorMail(
-        err,
-        "Refresh Data Section",
-        date,
-        restoreSuccessful
-      );
 
       return;
     }
@@ -221,40 +190,41 @@ class DataScraperService {
 
   //#region Private Methods
 
-  private RenameOldData = (date: string) => {
-    try {
-      fs.renameSync(
-        path.join(__dirname, "..", "Data", "liveData.json"),
-        path.join(__dirname, "..", "Data", `[${date}].json`)
-      );
-    } catch (err) {
-      console.error(err);
+  private UploadData = async (liveData) => {
+    conn.query(
+      "SELECT * FROM liveValidData WHERE archivedAt IS NULL ORDER BY createdAt DESC",
+      async (err, res, fields) => {
+        if (res.length > 0) {
+          let result = classToPlain(res[0]);
+          await conn.query(`UPDATE liveValidData SET archivedAt = NOW() WHERE id = ${result.id}`);
+        }
 
-      throw new LiveDataWriteError("Failed to rename live data! Reverting...");
-    }
+        conn.query(
+          "SELECT * FROM liveInvalidData WHERE archivedAt IS NULL ORDER BY createdAt DESC",
+          async (err, res2, fields) => {
+            if (res2.length > 0) {
+              let result2 = classToPlain(res2[0]);
+              await conn.query(`UPDATE liveInvalidData SET archivedAt = NOW() WHERE id = ${result2.id}`);
+            }
 
-    console.log("Successfully renamed!");
+            let validData = this.FilterValidData(liveData);
+            let queryValid = `INSERT INTO liveValidData (data,count,createdAt) VALUES ('${JSON.stringify(
+              validData
+            )}',${validData.length},NOW())`;
+            await conn.query(queryValid);
+
+            let queryInvalid = `INSERT INTO liveInvalidData (data,count,createdAt) VALUES ('${JSON.stringify(
+              liveData
+            )}',${liveData.length},NOW()) `;
+            await conn.query(queryInvalid);
+          }
+        );
+      }
+    );
   };
 
-  private CreateNewDataFile = (newData, date: string) => {
-    try {
-      fs.appendFileSync(
-        path.join(__dirname, "..", "Data", "liveData.json"),
-        JSON.stringify(newData)
-      );
-    } catch (err) {
-      console.error(err);
-      this.RestoreData(date);
-      throw new LiveDataWriteError(
-        "Failed to create new live data! Reverting..."
-      );
-    }
-
-    console.log("Successfully created new live data!");
-  };
-
-  private FilterAndCreateValidData = (newData) => {
-    const filteredData = newData.filter((x: ResortAdapter) => {
+  private FilterValidData = (newData) => {
+    return newData.filter((x: ResortAdapter) => {
       if (
         x.id?.length > 0 &&
         x.id !== " " &&
@@ -279,62 +249,6 @@ class DataScraperService {
       )
         return x;
     });
-
-    if (filteredData.length > 0) {
-      try {
-        fs.truncateSync(
-          path.join(__dirname, "..", "Data", "validLiveData.json")
-        );
-      } catch (err) {
-        // this.RestoreData(date);
-        console.error(err);
-        throw new LiveDataWriteError(
-          "Failed to create new live data! Reverting..."
-        );
-      }
-
-      console.error("Successfully trunctuated old valid live data!");
-
-      try {
-        fs.appendFileSync(
-          path.join(__dirname, "..", "Data", "validLiveData.json"),
-          JSON.stringify(filteredData)
-        );
-      } catch (err) {
-        console.log(err);
-      }
-
-      console.log("Successfully created new valid live data!");
-    }
-  };
-
-  private MoveDataToBackup = (date: string) => {
-    try {
-      fs.renameSync(
-        path.join(__dirname, "..", "Data", `[${date}].json`),
-        path.join(__dirname, "..", "Data", "Backup", `[${date}].json`)
-      );
-    } catch (err) {
-      console.log("Failed to move data to Backup Folder!");
-    }
-
-    console.log("Successfully moved data to Backup Folder!");
-    console.log("All done chief.");
-  };
-
-  private RestoreData = (date: string) => {
-    try {
-      fs.renameSync(
-        path.join(__dirname, "..", "Data", `[${date}].json`),
-        path.join(__dirname, "..", "Data", "liveData.json")
-      );
-    } catch (err) {
-      console.error("ERROR: " + err);
-      return 1;
-    }
-
-    console.log("Successfully restored data on day: " + date);
-    return 0;
   };
 
   //#endregion

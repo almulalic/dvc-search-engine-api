@@ -29,10 +29,10 @@ app.listen(port, () => {
 
     const mins = time.getMinutes();
 
-    time.setMinutes(mins - (mins % 29));
+    time.setMinutes(mins - (mins % 59));
     time.setSeconds(0);
 
-    let mom1 = moment(time).add(29, "m").valueOf();
+    let mom1 = moment(time).add(59, "m").valueOf();
 
     if (mom1 <= moment().valueOf()) {
       console.log("Refreshed in ", moment(mom1).format("YYYY-MM-DD HH:mm:ss"));

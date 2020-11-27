@@ -1,11 +1,6 @@
 import { ResortAdapter } from "../Types/Interface";
 import { NormalizePriceValue } from "../Helpers/Helpers";
-import {
-  ResortAlias,
-  DateAlias,
-  UseYearAlias,
-  StatusAlias,
-} from "../Types/Aliases";
+import { ResortAlias, DateAlias, UseYearAlias, StatusAlias } from "../Types/Aliases";
 import { ResortRawAdapter } from "../Types/Interface";
 import { BrokerAlias } from "../Types/Aliases";
 
@@ -33,7 +28,7 @@ export class DVCResaleMarketAdapter implements ResortAdapter {
     this.points = Number(raw.points);
     this.price = raw.price;
     this.pricePerPoint = raw.priceperpoint;
-    this.pointAvailability = raw.pointavailability?.toString();
+    this.pointAvailability = raw.pointavailability?.toString().replace("\n", " ");
     this.useYear = UseYearAlias.get(raw.useyear);
     this.status = StatusAlias.get(raw.status) ?? 0;
     this.href = raw.href ?? null;

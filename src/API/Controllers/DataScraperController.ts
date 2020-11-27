@@ -1,6 +1,6 @@
-import cors from "cors";
 import express from "express";
 
+var AWS = require("aws-sdk");
 import DataScraperService from "../../Services/DataScraperService";
 
 const DataScraperController = express.Router();

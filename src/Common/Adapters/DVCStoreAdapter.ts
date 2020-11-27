@@ -66,7 +66,7 @@ export class DVCStoreAdapter implements ResortAdapter {
       }
     }
 
-    return pa.slice(0, position).trim();
+    return pa.slice(0, position).trim().replace("\n", " ");
   };
 
   private GetPricePerPoint = (pa) => {

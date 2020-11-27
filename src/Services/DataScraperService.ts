@@ -1,11 +1,7 @@
-import fs from "fs";
-import path from "path";
-import moment from "moment";
 import cheerio from "cheerio";
 import fetch from "node-fetch";
 
 import { ResortAdapter } from "../Common/Types/Interface";
-import { LiveDataWriteError } from "../Common/Types/Exceptions";
 import conn from "../Database/connection";
 
 import {
@@ -15,7 +11,6 @@ import {
   DVCStoreAdapter,
   DVCResaleAdapter,
 } from "../Common/Adapters";
-import EmailService from "../Email/EmailService";
 import { classToPlain } from "class-transformer";
 
 class DataScraperService {
@@ -208,14 +203,14 @@ class DataScraperService {
             }
 
             let validData = this.FilterValidData(liveData);
-            let queryValid = `INSERT INTO liveValidData (data,count,createdAt) VALUES ('${JSON.stringify(
+            let queryValid = `INSERT INTO liveValidData (data,countValid,countInvalid,createdAt) VALUES ('${JSON.stringify(
               validData
-            )}',${validData.length},NOW())`;
+            )}',${validData.length},${liveData.length},NOW())`;
             await conn.query(queryValid);
 
-            let queryInvalid = `INSERT INTO liveInvalidData (data,count,createdAt) VALUES ('${JSON.stringify(
+            let queryInvalid = `INSERT INTO liveInvalidData (data,countValid,countInvalid,createdAt) VALUES ('${JSON.stringify(
               liveData
-            )}',${liveData.length},NOW()) `;
+            )}',${validData.length},${liveData.length},NOW()) `;
             await conn.query(queryInvalid);
           }
         );

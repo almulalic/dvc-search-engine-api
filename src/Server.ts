@@ -25,20 +25,11 @@ app.listen(port, () => {
   console.info("Server is running on port: " + port);
 
   setInterval(() => {
-    let time = new Date();
-
-    const mins = time.getMinutes();
-
-    time.setMinutes(mins - (mins % 59));
-    time.setSeconds(0);
-
-    let mom1 = moment(time).add(59, "m").valueOf();
-
-    if (mom1 <= moment().valueOf()) {
-      console.log("Refreshed in ", moment(mom1).format("YYYY-MM-DD HH:mm:ss"));
+    if (new Date().getMinutes() === 0) {
+      console.log("Refreshed in ", moment().utc().format("DD-MM-YYYY HH:mm:ss"));
       DataScraperService.RefreshData(null, null);
     }
-  }, 10000);
+  }, 30000);
 });
 
 export default app;

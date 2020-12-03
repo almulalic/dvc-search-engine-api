@@ -29,7 +29,7 @@ app.listen(port, () => {
       console.log("Refreshed in ", moment().utc().format("DD-MM-YYYY HH:mm:ss"));
       DataScraperService.RefreshData(null, null);
     }
-  }, 30000);
+  }, 60000);
 });
 
 export default app;

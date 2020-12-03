@@ -191,7 +191,7 @@ class DataScraperService {
       async (err, res, fields) => {
         if (res.length > 0) {
           let result = classToPlain(res[0]);
-          await conn.query(`UPDATE liveValidData SET archivedAt = NOW() WHERE id = ${result.id}`);
+          await conn.query(`DELETE FROM liveValidData WHERE id = ${result.id}`);
         }
 
         conn.query(
@@ -199,7 +199,7 @@ class DataScraperService {
           async (err, res2, fields) => {
             if (res2.length > 0) {
               let result2 = classToPlain(res2[0]);
-              await conn.query(`UPDATE liveInvalidData SET archivedAt = NOW() WHERE id = ${result2.id}`);
+              await conn.query(`DELETE FROM liveInvalidData WHERE id = ${result2.id}`);
             }
 
             let validData = this.FilterValidData(liveData);

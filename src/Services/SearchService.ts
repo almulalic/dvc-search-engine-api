@@ -58,6 +58,12 @@ class SearchService {
 
       const body = req.body as FilterBody;
 
+      if (!plainResult) {
+        res.status(400);
+        res.json("No data");
+        return;
+      }
+
       let filteredData: any = JSON.parse(plainResult.data);
 
       const sidx = body.sidx as SortIdx;
